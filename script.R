@@ -1,22 +1,22 @@
-## LEGEND
+## Legend elements
+### 51 Production
+### 61 Imports
+### 71 Stock Changes
+### 91 Exports
+### 101 Feed
+### 111 Seed
+### 121 Losses
+### 141 Food Availability
+### 151 Industrial Uses
 
-## 51 Production
-## 61 Imports
-## 71 Stock Changes
-## 91 Exports
-## 101 Feed
-## 111 Seed
-## 121 Losses
-## 141 Food Availability
-## 151 Industrial Uses
+## Additional element not in the equation
+### 171 Food Consumption
+### 181 Statistical Discrepancy
 
-## Additional but not used for the balancing. To be filtered out
-## 171 Food Consumption
-## 181 Statistical Discrepancy
-
-### BALANCING EQUATION
-## Production + Imports - Exports + Stock = Feed + Seed + Food Availability + Industrial Uses + Losses
-## - Production - Imports + Exports - Stock + Feed + Seed + Food Availability + Industrial Uses + Losses 
+### Balancing equation
+## - Production - Imports + Exports - Stock + 
+## + Feed + Seed + Food Availability + 
+## + Industrial Uses + Losses 
 
 
 suppressMessages({
@@ -30,63 +30,74 @@ suppressMessages({
 
 
 # Just temporary to check 
-setwd("~/Desktop/FAO/AA_new_balancing/")
+setwd("~/Documents/Balancing_ML/")
 
 tab = tbl_df(fread("sample_balance_table.csv",header=T))
 
 ## Set to 0 the NAs (this should be structural zeros)
-tab = mutate(tab,Value = ifelse(is.na(Value),0,Value))
+## NAs has to be removed and then back in the balancing
+NAs = filter(tab,is.na(Value))
+
+# tab = mutate(tab,Value = ifelse(is.na(Value),0,Value)) 
+# We cannot do that, since we have different distributions
 
 ## Remove additional value not necessary in the balacing
 tab_fl = filter(tab, !(measuredElement %in% c(171,181)))
 
+## Elements of the equation, this is important for the sign
+elements =  c(51,61,91,71,101,111,141,151,121)
+names(elements) = c("Production","Imports","Exports","StockChanges",
+			"Feed","Seed","Food","Industrial","Losses")
+
+## For each itemCPC all values per line
 ttab = tab_fl %>%
-	group_by(geographicAreaM49,timePointYears,measuredElement,measuredItemCPC) %>%
+	group_by(geographicAreaM49, timePointYears, 
+		measuredElement,measuredItemCPC) %>%
 	summarize(
 		Dist = paste(fbsDistribParam, collapse=","),
-		Values = paste(Value, collapse = ",")) %>% 
+		Values = paste(Value, collapse = ",")
+	)
+		
+## Get information of of the distribution
+## and save it as a member of the equation
+ttab = ttab %>% 
 	mutate(
 		## Add distribution information
 		Distr = ifelse(Dist=="mu,sigma", "dnorm", 
 		ifelse(Dist == "logmu,logsigma","dlnorm", 
-		ifelse(Dist == "alpha,beta","dbeta","dgamma")))
+		ifelse(Dist == "alpha,beta","dbeta","dgamma"))),
+		Sign = ifelse(measuredElement %in% c(51,61,71),"-","+"),
+		Params = paste0("params[",match(measuredElement,elements),"]"),
+		Member = ifelse(Distr!="dgamma",
+			paste0(Sign," ",Distr,"(",Params,",",Values,")"),
+			paste0(Sign," ",Distr,"(",Params,", rate = ",Values,")"))
+	)
+	
+## Remove columns not necessary
+ttab = ttab %>%  
+	select(
+		geographicAreaM49, timePointYears, 
+		measuredElement, measuredItemCPC, Member
+	)
+	
+tab_like = ttab %>%
+	group_by(geographicAreaM49, timePointYears, measuredItemCPC) %>%
+	summarize(
+		Likelihood = paste(Member, collapse = " ")
 	)
 	
 
-tts = ttab %>%
-	group_by(measuredItemCPC) %>%
-	summarize(
-		all = n()
-	) %>% filter(all>7)
-
-ab = filter(ttab,measuredItemCPC== 116)
-
-likelihood = function(data,params){
-	## Element of the equation (the order is important for the equation)
-	###### EQUATION ######
-	## - Production - Imports + Exports - Stock + Feed 
-	## + Seed + Food Availability + Industrial Uses + Losses
-	## - 51 - 61 + 91 - 71 + 101 + 111 + 141 + 151 + 121
-	#####
-	elements =  c(51,61,91,71,101,111,141,151,121)
-	names(elements) = c("Production","Imports","Exports","StockChanges",
-			"Feed","Seed","Food","Industrial","Losses")
-	signs = c(-1,-1,+1,-1,+1,+1,+1,+1,+1)
-	signs = presents*signs
-	## Check if the element is present in the commodity we are selecting
-	presents = sapply(elements, function(x) NROW(filter(data, measuredElement == x)))
-	## Parameters to zero if element not present
-	params = params*presents	
-	# - Production - Imports + Exports - Stock + Feed + 
-	# Seed + Food Availability + Industrial Uses + Losses
-	## The equation is data dependent, otherwise it does not work cause it cannot find elements
-	parse(text = )
-	
-	
+optimization = function(data,params){
+	fit = optim
 }
 
 
-fit = optim(par = c(), fn = likelihood, lower = rep(0,9), method = "L-BFGS-B")
+	
+optim = tab_like %>%
+	
+	
+
+fit = optim(par = c(10,2), fn = likelihood, lower = rep(0,9), method = "L-BFGS-B")
 f = sum(fit$par)
 c(fit$par,f)
 # plot(-10:20, sapply(-10:20, function(x){likelihood(c(x,2))}))
@@ -100,6 +111,16 @@ ttab2
 
 
 
+likelihood = function(params){
+    p = params[1]
+    i = params[2]
+    f = p + i
+    s = 0
+    -dnorm(p, mean = Pmean, sd = Psigma, log = TRUE) -
+        dnorm(f, mean = Fmean, sd = Fsigma, log = TRUE) -
+        dnorm(i, mean = Imean, sd = Isigma, log = TRUE)# -
+#        dnorm(s, mean = Smean, sd = Ssigma, log = TRUE)
+}
 	
 
 ### ANOTHER APPROACH, but not finished ###
