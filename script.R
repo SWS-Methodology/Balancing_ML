@@ -79,56 +79,63 @@ ttab = ttab %>%
 		geographicAreaM49, timePointYears, 
 		measuredElement, measuredItemCPC, Member
 	)
-	
+
+
+## Table per commodity with the balancing equation directly	
 tab_like = ttab %>%
 	group_by(geographicAreaM49, timePointYears, measuredItemCPC) %>%
 	summarize(
 		Likelihood = paste(Member, collapse = " ")
 	)
+
+
+### Marco: need to understand with Josh and Nata
+
+## Working (first line)
+optim(par = rep(0,9),
+	fn =function(params){eval(parse(text = tab_like[1,4]))},
+	lower=rep(0,9), 
+	method = "L-BFGS-B")
+
+## not working (first line)
+optim(par = rep(1,9),
+	fn =function(params){eval(parse(text = tab_like[1,4]))},
+	lower=rep(0,9), 
+	method = "L-BFGS-B")
+
+## Not working (second line)
+optim(par = rep(0,9),
+	fn =function(params){eval(parse(text = tab_like[2,4]))},
+	lower=rep(0,9), 
+	method = "L-BFGS-B")
 	
+## Working (second line)
+optim(par = rep(1,9),
+	fn =function(params){eval(parse(text = tab_like[2,4]))},
+	lower=rep(0,9), 
+	method = "L-BFGS-B")
 
-optimization = function(data,params){
-	fit = optim
-}
+
+
+
+
+### Marco: need to work on that as soon as I understand the previous problem
+
+#optim = tab_like %>%
+#	rowwise() %>%
+#	mutate(
+#		params = optim(par = rep(0,9), 
+#			fn = function(params){eval(parse(text = Likelihood))},
+#			lower = rep(0,9),
+#			method = "L-BFGS-B")$par
+#	)
+
 
 
 	
-optim = tab_like %>%
-	
-	
-
-fit = optim(par = c(10,2), fn = likelihood, lower = rep(0,9), method = "L-BFGS-B")
-f = sum(fit$par)
-c(fit$par,f)
-# plot(-10:20, sapply(-10:20, function(x){likelihood(c(x,2))}))
-
-ttab2 %>% 
-	group_by(measuredItemCPC) %>% 
-	
-	
-
-ttab2
-
-
-
-likelihood = function(params){
-    p = params[1]
-    i = params[2]
-    f = p + i
-    s = 0
-    -dnorm(p, mean = Pmean, sd = Psigma, log = TRUE) -
-        dnorm(f, mean = Fmean, sd = Fsigma, log = TRUE) -
-        dnorm(i, mean = Imean, sd = Isigma, log = TRUE)# -
-#        dnorm(s, mean = Smean, sd = Ssigma, log = TRUE)
-}
-	
-
 ### ANOTHER APPROACH, but not finished ###
-
-
 idvar = c("geographicAreaM49","measuredElement","measuredItemCPC","timePointYears")
 timevar = c("fbsDistribParam","Value")
-
 tab1 = spread(tab, fbsDistribParam, Value)
 ## Remove Food Consumption 171 and Statistical Discrepancy 181
 tab2 = filter(tab1, !(measuredElement %in% c(171,181)))
