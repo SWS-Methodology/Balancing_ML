@@ -1,4 +1,6 @@
 load("example.Rdata")
+source("balancing.R")
+source("defaultStandardizationParametersBalancing.R")
 
 parameters = defaultStandardizationParametersBalancing()
 parameters.df = plyr::ldply(parameters$elements, data.frame,.id = "element")
