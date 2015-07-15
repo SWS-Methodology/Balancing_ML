@@ -38,8 +38,7 @@ tab = tbl_df(fread("sample_balance_table.csv",header=T))
 ## NAs has to be removed and then back in the balancing
 NAs = filter(tab,is.na(Value))
 
-# tab = mutate(tab,Value = ifelse(is.na(Value),0,Value)) 
-# We cannot do that, since we have different distributions
+tab = filter(tab,!is.na(Value))
 
 ## Remove additional value not necessary in the balacing
 tab_fl = filter(tab, !(measuredElement %in% c(171,181)))
@@ -65,12 +64,9 @@ ttab = ttab %>%
 		## Add distribution information
 		Distr = ifelse(Dist=="mu,sigma", "dnorm", 
 		ifelse(Dist == "logmu,logsigma","dlnorm", 
-		ifelse(Dist == "alpha,beta","dbeta","dgamma"))),
-		Sign = ifelse(measuredElement %in% c(51,61,71),"-","+"),
+		ifelse(Dist == "alpha,beta","dbeta","dexp"))),
 		Params = paste0("params[",match(measuredElement,elements),"]"),
-		Member = ifelse(Distr!="dgamma",
-			paste0(Sign," ",Distr,"(",Params,",",Values,")"),
-			paste0(Sign," ",Distr,"(",Params,", rate = ",Values,")"))
+		Member = paste0("+ ",Distr,"(", Params, ",",Values,", log = T)")
 	)
 	
 ## Remove columns not necessary
@@ -89,31 +85,11 @@ tab_like = ttab %>%
 	)
 
 
-### Marco: need to understand with Josh and Nata
 
-## Working (first line)
-optim(par = rep(0,9),
-	fn =function(params){eval(parse(text = tab_like[1,4]))},
-	lower=rep(0,9), 
-	method = "L-BFGS-B")
 
-## not working (first line)
-optim(par = rep(1,9),
-	fn =function(params){eval(parse(text = tab_like[1,4]))},
-	lower=rep(0,9), 
-	method = "L-BFGS-B")
 
-## Not working (second line)
-optim(par = rep(0,9),
-	fn =function(params){eval(parse(text = tab_like[2,4]))},
-	lower=rep(0,9), 
-	method = "L-BFGS-B")
-	
-## Working (second line)
-optim(par = rep(1,9),
-	fn =function(params){eval(parse(text = tab_like[2,4]))},
-	lower=rep(0,9), 
-	method = "L-BFGS-B")
+### SUM OF ALL PROBABILITIES THE LIKELIHOOD
+### ONE ELEMENT CALCULATED AS DIFFERENCE, tricky
 
 
 
