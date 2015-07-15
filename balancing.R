@@ -77,8 +77,9 @@ balancing = function(param1, param2, dist = rep("Normal", length(param1)), sign,
                   fun = functionToOptimize,
                   eqfun = constraint,
                   eqB = 0,
+                  #LB = rep(0,length(param1))
                   control = list(tol = 1e-10),
-                  LB = 0)
+                  )
     return(optimizedResult$pars)
   })
 }
