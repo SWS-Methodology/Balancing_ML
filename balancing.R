@@ -1,0 +1,85 @@
+##' Balancing algorithm via Maximum Likelihood
+##' 
+##' Taken mainly from allocateDelta.R in Aupus
+##' 
+##' @param param1 A vector of the first parameter for each of the elements.  For
+##'   a normal distribution, this is the mean.
+##' @param param2 A vector of the second parameter for each of the elements. For
+##'   a normal distribution, this is the standard deviation.
+##' @param dist A vector of the name of the distribution for each distribution. 
+##'   Currently, only "Normal" is implemented. Working in progress for different
+##'    distribution
+##' @param sign A vector of the sign of each element.  These values should all 
+##'   be +1 or -1, and they indicate if Delta_1, Delta_2, ... should be
+##'   pre-multiplied by a negative or not.  Usually, these will all be +1.
+##' @param optimize A string with the method of optimization of the Maximum 
+##'   Likelihood
+##' 
+##' @return A vector of the final balanced values
+##' 
+
+balancing = function(param1, param2, dist = rep("Normal", length(param1)), sign,
+                     optimize = "L-BFGS-B"){
+  ## Input Checks
+  N = length(param1)
+  #stopifnot(length(param1) == 1)
+  stopifnot(length(param2) == N)
+  stopifnot(length(dist) == N)
+  stopifnot(length(sign) == N)
+  # This has to removed as soon as other distribution are available
+  stopifnot(dist %in% "Normal")
+  stopifnot(sign %in% c(-1, 1))
+  #if(any(dist == "Normal" & param2 < 1)){
+  #  param2[dist == "Normal" & param2 < 1] = 1
+  #  warning("Some standard deviations (for a normal distribution) were ",
+  #          "small (<1) and could cause a problem for the optimization.  ",
+  #          "These were adjusted up to 1.")
+  #}
+  
+  ## value should be of length = length(param1)-1 so that the final element
+  ## can be computed.
+  
+  
+  
+  switch(optimize, "L-BFGS-B" = {
+  functionToOptimize = function(value){
+      ## We must have sum(value * sign) = 0 if all elements are included. 
+      ## Thus, the difference in the first N-1 is sum(value[-last] * sign[-last])
+      residual = sum(value * sign[-N])
+      value = c(value, -residual*sign[N])
+      densities = ifelse(dist == "Normal",
+                         dnorm(value * sign, mean = param1,
+                               sd = param2, log = TRUE),
+                         NA)
+      # Negative log-likelihood
+      return(-sum(densities))
+  }
+  meanVec = param1[-N]
+  optimizedResult = optim(par = meanVec, fn = functionToOptimize,
+                          method = "L-BFGS-B", lower = 0)
+  finalValues = optimizedResult$par
+  residual = -sum(finalValues * sign[-N])
+  finalValues = c(finalValues, residual * sign[N])
+  return(finalValues)
+  }, "solnp" = {
+    suppressMessages(library(Rsolnp))
+    functionToOptimize = function(value){
+      densities = ifelse(dist == "Normal",
+                         dnorm(value * sign, mean = param1,
+                               sd = param2, log = TRUE),
+                         NA)    
+      return(-sum(densities))      
+    }
+    constraint = function(value){
+      sum(value * sign)
+    }
+    optimizedResult = solnp(pars = param1,
+                  fun = functionToOptimize,
+                  eqfun = constraint,
+                  eqB = 0,
+                  control = list(tol = 1e-10),
+                  LB = 0)
+    return(optimizedResult$pars)
+  })
+}
+
