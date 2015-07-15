@@ -14,6 +14,10 @@
 ##'   pre-multiplied by a negative or not.  Usually, these will all be +1.
 ##' @param optimize A string with the method of optimization of the Maximum 
 ##'   Likelihood, default solnp (Rsolnp dependency)
+##' @param lbounds A Vector of the lower bounds for each element. These values
+##'   should all be numeric
+##' @param ubounds A Vector of the upper bounds for each element. These values
+##'   should all be numeric
 ##' 
 ##' @return A vector of the final balanced values
 ##' 
@@ -52,7 +56,7 @@ balancing = function(param1, param2, dist = rep("Normal", length(param1)), sign,
                                sd = param2, log = TRUE),
                          NA)
       # Negative log-likelihood
-      return(-sum(densities))
+      return(-sum(densities[!is.infinite(densities)]))
   }
   meanVec = param1[-N]
   optimizedResult = optim(par = meanVec, fn = functionToOptimize,
@@ -64,11 +68,12 @@ balancing = function(param1, param2, dist = rep("Normal", length(param1)), sign,
   }, "solnp" = {
     suppressMessages(library(Rsolnp))
     functionToOptimize = function(value){
+      valueDens = 
       densities = ifelse(dist == "Normal",
                          dnorm(value * sign, mean = param1,
                                sd = param2, log = TRUE),
                          NA)    
-      return(-sum(densities))      
+      return(-sum(densities[!is.infinite(densities)]))
     }
     constraint = function(value){
       sum(value * sign)

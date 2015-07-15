@@ -21,82 +21,84 @@ defaultStandardizationParametersBalancing = function(){
     parentVar = "parentID",
     extractVar = "extractionRate",
     shareVar = "share",
-    production = list(
-      Code = "5510",
-      Sign = "+",
-      Dist = "Normal",
-      LB = 0,
-      UB = Inf
-    ),
-    import = list(
-      Code = "5421",
-      Sign = "+",
-      Dist = "Normal",
-      LB = 0,
-      UB = Inf
-    ),
-    export = list(
-      Code = "5900",
-      Sign = "-",
-      Dist = "Normal",
-      LB = 0,
-      UB = Inf
-    ),
-    stock = list(
-      Code = "71",
-      Sign = "+",
-      Dist = "Normal",
-      LB = -Inf,
-      UB = Inf
-    ),
-    food = list(
-      Code = "5141",
-      Sign = "-",
-      Dist = "Normal",
-      LB = 0,
-      UB = Inf
-    ),
-    feed = list(
-      Code = "5520",
-      Sign = "-",
-      Dist = "Normal",
-      LB = 0,
-      UB = Inf
-    ),
-    waste = list(
-      Code = "5120",
-      Sign = "-",
-      Dist = "Normal",
-      LB = 0,
-      UB = Inf
-    ),
-    seed = list(
-      Code = "5525",
-      Sign = "-",
-      Dist = "Normal",
-      LB = 0,
-      UB = Inf
-    ),
-    industrial = list(
-      Code = "",
-      Sign = "-",
-      Dist = "Normal",
-      LB = 0,
-      UB = Inf
-    ),
-    tourist = list(
-      Code = "",
-      Sign = "-",
-      Dist = "Normal",
-      LB = 0,
-      UB = Inf
-    ),
-    residual = list(
-      Code = "",
-      Sign = "-",
-      Dist = "Normal",
-      LB = -Inf,
-      UB = Inf
+    elements = list(
+      "5510" = list(
+        Who = "Production",
+        Sign = +1,
+        Dist = "Normal",
+        LB = 0,
+        UB = Inf
+      ),
+      "5421" = list(
+        Who = "Imports",
+        Sign = +1,
+        Dist = "Normal",
+        LB = 0,
+        UB = Inf
+      ),
+      "5900" = list(
+        Who = "Exports",
+        Sign = -1,
+        Dist = "Normal",
+        LB = 0,
+        UB = Inf
+      ),
+      "71" = list(
+        Who = "StockChange",
+        Sign = +1,
+        Dist = "Normal",
+        LB = -Inf,
+        UB = Inf
+      ),
+      "5141" = list(
+        Who = "Food",
+        Sign = -1,
+        Dist = "Normal",
+        LB = 0,
+        UB = Inf
+      ),
+      "5520" = list(
+        Who = "Feed",
+        Sign = -1,
+        Dist = "Normal",
+        LB = 0,
+        UB = Inf
+      ),
+      "5120" = list(
+        Who = "Waste",
+        Sign = -1,
+        Dist = "Normal",
+        LB = 0,
+        UB = Inf
+      ),
+      "5525" = list(
+        Who = "Seed",
+        Sign = -1,
+        Dist = "Normal",
+        LB = 0,
+        UB = Inf
+      ),
+      "I???" = list(
+        Who = "Industrial",
+        Sign = -1,
+        Dist = "Normal",
+        LB = 0,
+        UB = Inf
+      ),
+      "T???" = list(
+        Who = "Tourist",
+        Sign = -1,
+        Dist = "Normal",
+        LB = 0,
+        UB = Inf
+      ),
+      "R???" = list(
+        Who = "Residual",
+        Sign = -1,
+        Dist = "Normal",
+        LB = -Inf,
+        UB = Inf
+      )
     )
   )
 }
