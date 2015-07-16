@@ -93,7 +93,7 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
     }
 
     ## Scale parameters    
-    scaleFactor = max(param1)
+    scaleFactor = max(abs(param1))
     param1 = param1 / scaleFactor
     param2 = param2 / scaleFactor
     lbounds = lbounds / scaleFactor
