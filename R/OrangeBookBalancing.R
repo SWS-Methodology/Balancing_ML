@@ -25,9 +25,8 @@ tableToBalance[,balancedValue := balancing(param1 = Value,
                                            dist = Dist,
                                            sign = Sign,
                                            lbounds = LB,
-                                           ubounds = UB,
-                                           optim = "L-BFGS-B")]
-
+                                           ubounds = UB)]
+tableToBalance
 
 ## Testing just for the rows with no 0 standard deviation
 test = tableToBalance[!(standardDeviation == 0),]
@@ -36,6 +35,5 @@ test[,balancedValue := balancing(param1 = Value,
                         dist = Dist,
                         sign = Sign,
                         lbounds = LB,
-                        ubounds = UB,
-                        optimize =  "L-BFGS-B")]
+                        ubounds = UB)]
 

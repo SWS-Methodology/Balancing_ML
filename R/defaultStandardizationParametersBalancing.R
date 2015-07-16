@@ -45,7 +45,7 @@ defaultStandardizationParametersBalancing = function(){
       ),
       "71" = list(
         Who = "StockChange",
-        Sign = +1,
+        Sign = -1,
         Dist = "Normal",
         LB = -Inf,
         UB = Inf
