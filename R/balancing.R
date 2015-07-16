@@ -96,6 +96,8 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
     scaleFactor = max(param1)
     param1 = param1 / scaleFactor
     param2 = param2 / scaleFactor
+    lbounds = lbounds / scaleFactor
+    ubounds = ubounds / scaleFactor
 
     initial = param1
     if(forceInitialConstraint){
