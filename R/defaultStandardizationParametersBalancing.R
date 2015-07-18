@@ -1,9 +1,9 @@
-##' Default Standardization Parameters
+##' Default Standardization Parameters Balancing
 ##' 
 ##' Provides an object which contains the standardization parameters.  This
 ##' allows for easy passing into functions.
 ##' 
-##' @return A list with the standardization parameters.
+##' @return A list with the standardization parameters for the balancing.
 ##' 
 
 defaultStandardizationParametersBalancing = function(){

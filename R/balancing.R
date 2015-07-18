@@ -23,6 +23,8 @@
 ##'   will be adjusted in an attempt to satisfy the constraints, but this may 
 ##'   not be possible.  If not, a warning is given and optimization proceeds
 ##'   with the provided starting value.
+##' @param tol The level of tolerance of the balancing (numeric). By default is
+##'   set up to 1e-5  
 ##'   
 ##' @return A vector of the final balanced values
 ##'   
@@ -30,7 +32,7 @@
 balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
                      optimize = "solnp", lbounds = rep(0, length(param1)),
                      ubounds = rep(Inf, length(param1)),
-                     forceInitialConstraint = TRUE){
+                     forceInitialConstraint = TRUE, tol = 1e-5){
   ## Input Checks
   N = length(param1)
   #stopifnot(length(param1) == 1)
@@ -50,83 +52,102 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
   
   ## value should be of length = length(param1)-1 so that the final element
   ## can be computed.
-  
-  
-  
-  switch(optimize, "L-BFGS-B" = {
-    functionToOptimize = function(value){
-      ## We must have sum(value * sign) = 0 if all elements are included. 
-      ## Thus, the difference in the first N-1 is sum(value[-last] * sign[-last])
-      residual = sum(value * sign[-N])
-      value = c(value, -residual*sign[N])
-      densities = ifelse(dist == "Normal",
-                         dnorm(value * sign, mean = param1,
-                               sd = param2, log = TRUE),
-                         NA)
-      # Negative log-likelihood
-      return(-sum(densities[!is.infinite(densities)]))
+  fixedIndex = (dist == "Normal" & param2 == 0) # Normal: sd=0 => Fixed
+  howManyFixed = length(which(fixedIndex))
+  ## We have 3 different condition
+  cond = 3 ## Two or more not fixed elements
+  if(howManyFixed == N) cond = 1 ## All fixed elements
+  if(howManyFixed == N-1) cond = 2 ## One not fixed element
+  switch(cond, `1` = {
+    ## Question, I had to round it, otherwise it didn't work, the sum was 0.469 for test1
+    if (abs(sum(round(param1*sign))) < tol){
+    #if (abs(sum(param1*sign)) < tol){
+      output = param1
+      #return(output) 
+    } else {
+      stop(paste0("All elements of the balancing cannot be fixed and not balanced, 
+            the sum is ", sum(round(param1*sign))))
     }
-    meanVec = param1[-N]
-    optimizedResult = optim(par = meanVec, fn = functionToOptimize,
-                            method = "L-BFGS-B", lower = lbounds)
-    finalValues = optimizedResult$par
-    residual = -sum(finalValues * sign[-N])
-    finalValues = c(finalValues, residual * sign[N])
-    return(finalValues)
-  }, "solnp" = {
-    fixedIndex = (dist == "Normal" & param2 == 0) # Normal: sd=0 => Fixed
-    ##' Function to Optimize
-    ##' 
-    ##' @param value A vector of the non-fixed values to optimize.
-    functionToOptimize = function(value){
-      densities = ifelse(dist[!fixedIndex] == "Normal",
-                         dnorm(value,
-                               mean = param1[!fixedIndex],
-                               sd = param2[!fixedIndex],
-                               log = TRUE),
-                         NA)
-      #return(-sum(densities[!is.infinite(densities)]))
-      return(-sum(densities))
-    }
-    constraint = function(value){
-      sum(value * sign[!fixedIndex]) + sum(param1[fixedIndex] * sign[fixedIndex])
-    }
-
-    ## Scale parameters    
-    scaleFactor = max(abs(param1))
-    param1 = param1 / scaleFactor
-    param2 = param2 / scaleFactor
-    lbounds = lbounds / scaleFactor
-    ubounds = ubounds / scaleFactor
-
-    initial = param1
-    if(forceInitialConstraint){
-      posSum = sum(param1[sign == 1])
-      negSum = sum(param1[sign == -1])
-      if(posSum > negSum & any(sign == -1 & !fixedIndex)){
-        initial[sign == -1 & !fixedIndex][1] = posSum - negSum +
-            initial[sign == -1 & !fixedIndex][1]
-      } else if(negSum > posSum & any(sign == 1 & !fixedIndex)){
-        initial[sign == 1 & !fixedIndex][1] = negSum - posSum +
-            initial[sign == 1 & !fixedIndex][1]
-      } else {
-        warning("Cannot easily force initial constraint to be satisfied, so ",
-                "initializing with default parameters.")
-      }
-    }
-    
-    optimizedResult = Rsolnp::solnp(pars = initial[!fixedIndex],
-                  fun = functionToOptimize,
-                  eqfun = constraint,
-                  eqB = 0,
-                  #LB = rep(0,length(param1))
-                  control = list(tol = 1e-8),
-                  LB = lbounds[!fixedIndex],
-                  UB = ubounds[!fixedIndex]
-                  )
-    output = param1 * scaleFactor
-    output[!fixedIndex] = optimizedResult$pars * scaleFactor
+  }, `2` = {
+    output = param1
+    output[fixedIndex] = param1[fixedIndex]
+    output[!fixedIndex] = sum(output[fixedIndex]*sign[fixedIndex])
     return(output)
+  }, `3` = {
+    switch(optimize, "L-BFGS-B" = {
+      functionToOptimize = function(value){
+        ## We must have sum(value * sign) = 0 if all elements are included. 
+        ## Thus, the difference in the first N-1 is sum(value[-last] * sign[-last])
+        residual = sum(value * sign[-N])
+        value = c(value, -residual*sign[N])
+        densities = ifelse(dist == "Normal",
+                           dnorm(value * sign, mean = param1,
+                                 sd = param2, log = TRUE),
+                           NA)
+        # Negative log-likelihood
+        return(-sum(densities[!is.infinite(densities)]))
+      }
+      meanVec = param1[-N]
+      optimizedResult = optim(par = meanVec, fn = functionToOptimize,
+                              method = "L-BFGS-B", lower = lbounds)
+      output = optimizedResult$par
+      residual = -sum(output * sign[-N])
+      output = c(output, residual * sign[N])
+      return(output)
+    }, "solnp" = {
+      ##' Function to Optimize
+      ##' 
+      ##' @param value A vector of the non-fixed values to optimize.
+      functionToOptimize = function(value){
+            densities = ifelse(dist[!fixedIndex] == "Normal",
+                               dnorm(value,
+                                     mean = param1[!fixedIndex],
+                                     sd = param2[!fixedIndex],
+                                     log = TRUE),
+                               NA)
+            #return(-sum(densities[!is.infinite(densities)]))
+            return(-sum(densities))
+          }
+          
+      constraint = function(value){
+          sum(value * sign[!fixedIndex]) + sum(param1[fixedIndex] * sign[fixedIndex])
+      }
+          
+      ## Scale parameters    
+      scaleFactor = max(abs(param1))
+      param1 = param1 / scaleFactor
+      param2 = param2 / scaleFactor
+      lbounds = lbounds / scaleFactor
+      ubounds = ubounds / scaleFactor
+      
+      initial = param1
+      if(forceInitialConstraint){
+        posSum = sum(param1[sign == 1])
+        negSum = sum(param1[sign == -1])
+        if(posSum > negSum & any(sign == -1 & !fixedIndex)){
+          initial[sign == -1 & !fixedIndex][1] = posSum - negSum +
+          initial[sign == -1 & !fixedIndex][1]
+        } else if(negSum > posSum & any(sign == 1 & !fixedIndex)){
+            initial[sign == 1 & !fixedIndex][1] = negSum - posSum +
+            initial[sign == 1 & !fixedIndex][1]
+        } else {
+            warning("Cannot easily force initial constraint to be satisfied, so ",
+                    "initializing with default parameters.")
+        }
+      }
+      optimizedResult = Rsolnp::solnp(pars = initial[!fixedIndex],
+                                      fun = functionToOptimize,
+                                      eqfun = constraint,
+                                      eqB = 0,
+                                      #LB = rep(0,length(param1))
+                                      control = list(tol = 1e-8),
+                                      LB = lbounds[!fixedIndex],
+                                      UB = ubounds[!fixedIndex]
+      )
+      output = param1 * scaleFactor
+      output[!fixedIndex] = optimizedResult$pars * scaleFactor
+      return(output)
+    })
   })
 }
 
