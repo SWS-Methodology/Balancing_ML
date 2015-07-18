@@ -50,6 +50,20 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
   #          "These were adjusted up to 1.")
   #}
   
+  ##' Function to get probability of a specific balanced value
+  ##' 
+  ##' @param value A vector of balanced values
+  ##' @param mean A vector of means 
+  ##' @param sd A vector of standardard deviation
+  ##' 
+  ##' @return A probability of picking that value
+  getProbability = function(value,mean,sd){
+    return(format(signif(pnorm(value+1,mean,sd) - pnorm(value-1,mean,sd)
+                         ,3),
+                  scientific = T))
+  }
+  
+  
   ## value should be of length = length(param1)-1 so that the final element
   ## can be computed.
   fixedIndex = (dist == "Normal" & param2 == 0) # Normal: sd=0 => Fixed
@@ -62,16 +76,21 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
     ## Question, I had to round it, otherwise it didn't work, the sum was 0.469 for test1
     if (abs(sum(round(param1*sign))) < tol){
     #if (abs(sum(param1*sign)) < tol){
-      output = param1
-      #return(output) 
+      output = list(param1,rep(1,N))
+      return(output) 
     } else {
       stop(paste0("All elements of the balancing cannot be fixed and not balanced, 
             the sum is ", sum(round(param1*sign))))
     }
   }, `2` = {
-    output = param1
-    output[fixedIndex] = param1[fixedIndex]
-    output[!fixedIndex] = sum(output[fixedIndex]*sign[fixedIndex])
+    values = param1
+    values[fixedIndex] = param1[fixedIndex]
+    values[!fixedIndex] = sum(values[fixedIndex]*sign[fixedIndex])
+    prob = rep(1,N)
+    prob[!fixedIndex] = getProbability(values[!fixedIndex],
+                                       param1[!fixedIndex],
+                                       param2[!fixedIndex]) 
+    output = list(values,prob)
     return(output)
   }, `3` = {
     switch(optimize, "L-BFGS-B" = {
@@ -94,7 +113,8 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
       residual = -sum(output * sign[-N])
       output = c(output, residual * sign[N])
       return(output)
-    }, "solnp" = {
+    }, 
+    "solnp" = {
       ##' Function to Optimize
       ##' 
       ##' @param value A vector of the non-fixed values to optimize.
@@ -146,7 +166,13 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
       )
       output = param1 * scaleFactor
       output[!fixedIndex] = optimizedResult$pars * scaleFactor
-      return(output)
+      
+      prob = rep(1,N)
+      prob[!fixedIndex] = getProbability(output[!fixedIndex],
+                                         param1[!fixedIndex],
+                                         param2[!fixedIndex]) 
+      final = list(output,prob)
+      return(final)
     })
   })
 }
