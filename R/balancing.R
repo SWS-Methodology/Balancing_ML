@@ -155,6 +155,7 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
                     "initializing with default parameters.")
         }
       }
+      
       optimizedResult = Rsolnp::solnp(pars = initial[!fixedIndex],
                                       fun = functionToOptimize,
                                       eqfun = constraint,
@@ -164,9 +165,9 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
                                       LB = lbounds[!fixedIndex],
                                       UB = ubounds[!fixedIndex]
       )
+      
       output = param1 * scaleFactor
       output[!fixedIndex] = optimizedResult$pars * scaleFactor
-      
       prob = rep(1,N)
       prob[!fixedIndex] = getProbability(output[!fixedIndex],
                                          param1[!fixedIndex] * scaleFactor,
