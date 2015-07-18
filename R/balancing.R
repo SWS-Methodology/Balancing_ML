@@ -56,7 +56,7 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
   ##' @param mean A vector of means 
   ##' @param sd A vector of standardard deviation
   ##' 
-  ##' @return A probability of picking that value
+  ##' @return A probability of picking that balanced value
   getProbability = function(value,mean,sd){
     return(format(signif(pnorm(value+1,mean,sd) - pnorm(value-1,mean,sd)
                          ,3),
@@ -169,8 +169,8 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
       
       prob = rep(1,N)
       prob[!fixedIndex] = getProbability(output[!fixedIndex],
-                                         param1[!fixedIndex],
-                                         param2[!fixedIndex]) 
+                                         param1[!fixedIndex] * scaleFactor,
+                                         param2[!fixedIndex] * scaleFactor) 
       final = list(output,prob)
       return(final)
     })
