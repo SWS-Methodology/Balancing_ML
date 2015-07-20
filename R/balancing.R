@@ -13,7 +13,10 @@
 ##'   be +1 or -1, and they indicate if Delta_1, Delta_2, ... should be 
 ##'   pre-multiplied by a negative or not.  Usually, these will all be +1.
 ##' @param optimize A string with the method of optimization of the Maximum 
-##'   Likelihood, default solnp (Rsolnp dependency)
+##'   Likelihood, default solnp (Rsolnp dependency).  Must be one of "solnp", 
+##'   "L-BFGS-B" (uses optim and is NOT recommended, as it hasn't been tested 
+##'   thoroughly and doesn't enforce all constraints), or "constrOptim" (using
+##'   constrOptim from base package).
 ##' @param lbounds A Vector of the lower bounds for each element. These values 
 ##'   should all be numeric
 ##' @param ubounds A Vector of the upper bounds for each element. These values 
@@ -21,10 +24,10 @@
 ##' @param forceInitialConstraint Should the initial parameter vector be forced 
 ##'   to satisfy the constraints?  If TRUE, the initial value for one element 
 ##'   will be adjusted in an attempt to satisfy the constraints, but this may 
-##'   not be possible.  If not, a warning is given and optimization proceeds
+##'   not be possible.  If not, a warning is given and optimization proceeds 
 ##'   with the provided starting value.
-##' @param tol The level of tolerance of the balancing (numeric). By default is
-##'   set up to 1e-5  
+##' @param tol The level of tolerance of the balancing (numeric). By default is 
+##'   set up to 1e-5
 ##'   
 ##' @return A vector of the final balanced values
 ##'   
@@ -42,27 +45,13 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
   # This has to removed as soon as other distribution are available
   stopifnot(dist %in% "Normal")
   stopifnot(sign %in% c(-1, 1))
-  stopifnot(optimize %in% c("solnp", "L-BFGS-B"))
+  stopifnot(optimize %in% c("solnp", "L-BFGS-B", "constrOptim"))
   #if(any(dist == "Normal" & param2 < 1)){
   #  param2[dist == "Normal" & param2 < 1] = 1
   #  warning("Some standard deviations (for a normal distribution) were ",
   #          "small (<1) and could cause a problem for the optimization.  ",
   #          "These were adjusted up to 1.")
   #}
-  
-  ##' Function to get probability of a specific balanced value
-  ##' 
-  ##' @param value A vector of balanced values
-  ##' @param mean A vector of means 
-  ##' @param sd A vector of standardard deviation
-  ##' 
-  ##' @return A probability of picking that balanced value
-  getProbability = function(value,mean,sd){
-    return(format(signif(pnorm(value+1,mean,sd) - pnorm(value-1,mean,sd)
-                         ,3),
-                  scientific = T))
-  }
-  
   
   ## value should be of length = length(param1)-1 so that the final element
   ## can be computed.
@@ -76,23 +65,16 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
     ## Question, I had to round it, otherwise it didn't work, the sum was 0.469 for test1
     if (abs(sum(round(param1*sign))) < tol){
     #if (abs(sum(param1*sign)) < tol){
-      #output = list(param1,rep(1,N))
-      output = list(param1)
-      return(output) 
+      output = param1
+      #return(output) 
     } else {
       stop(paste0("All elements of the balancing cannot be fixed and not balanced, 
             the sum is ", sum(round(param1*sign))))
     }
   }, `2` = {
-    values = param1
-    values[fixedIndex] = param1[fixedIndex]
-    values[!fixedIndex] = sum(values[fixedIndex]*sign[fixedIndex])
-    #prob = rep(1,N)
-    #prob[!fixedIndex] = getProbability(values[!fixedIndex],
-    #                                   param1[!fixedIndex],
-    #                                   param2[!fixedIndex]) 
-    #output = list(values,prob)
-    output = list(values)
+    output = param1
+    output[fixedIndex] = param1[fixedIndex]
+    output[!fixedIndex] = sum(output[fixedIndex]*sign[fixedIndex])
     return(output)
   }, `3` = {
     switch(optimize, "L-BFGS-B" = {
@@ -115,8 +97,7 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
       residual = -sum(output * sign[-N])
       output = c(output, residual * sign[N])
       return(output)
-    }, 
-    "solnp" = {
+    }, "solnp" = {
       ##' Function to Optimize
       ##' 
       ##' @param value A vector of the non-fixed values to optimize.
@@ -132,8 +113,7 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
           }
           
       constraint = function(value){
-        sum(value * sign[!fixedIndex]) + sum(param1[fixedIndex] * sign[fixedIndex])
-        # sum(value * sign, param1[fixedIndex])
+          sum(value * sign[!fixedIndex]) + sum(param1[fixedIndex] * sign[fixedIndex])
       }
           
       ## Scale parameters    
@@ -158,7 +138,6 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
                     "initializing with default parameters.")
         }
       }
-      
       optimizedResult = Rsolnp::solnp(pars = initial[!fixedIndex],
                                       fun = functionToOptimize,
                                       eqfun = constraint,
@@ -168,14 +147,8 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
                                       LB = lbounds[!fixedIndex],
                                       UB = ubounds[!fixedIndex]
       )
-      
       output = param1 * scaleFactor
       output[!fixedIndex] = optimizedResult$pars * scaleFactor
-      #prob = rep(1,N)
-      #prob[!fixedIndex] = getProbability(output[!fixedIndex],
-      #                                   param1[!fixedIndex] * scaleFactor,
-      #                                   param2[!fixedIndex] * scaleFactor) 
-      #final = list(output,prob)
       return(output)
     },
     "constrOptim" = {
@@ -198,7 +171,13 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
       param1 = param1 / scaleFactor
       param2 = param2 / scaleFactor
       lbounds = lbounds / scaleFactor
-      ubounds = ubounds / scaleFactor
+      ## We need finite lower bounds.  Since the largest value is currently 1, a
+      ## lower bound of -10000 should always be large enough for all
+      ## optimizations.
+      lbounds[lbounds == -Inf] = -10000
+      if(any(ubounds < Inf)){
+        warning("Current optimization ignores upper bound!")
+      }
       
       initial = param1
       if(forceInitialConstraint){
@@ -211,21 +190,44 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
             initial[sign == 1 & !fixedIndex][1] = negSum - posSum +
             initial[sign == 1 & !fixedIndex][1]
         } else {
-            warning("Cannot easily force initial constraint to be satisfied, so ",
+            ## Must raise an error here, as not satisfying the constraints will
+            ## kill our optimizer.
+            stop("Cannot easily force initial constraint to be satisfied, so ",
                     "initializing with default parameters.")
         }
       }
       
-      optimizedResult = nloptr::nloptr(x0 = initial[!fixedIndex],
-                                       eval_f = functionToOptimize,
-                                       eval_g_eq = constraint,
-                                       lb = lbounds[!fixedIndex],
-                                       ub = ubounds[!fixedIndex],
-                                       opts = list(algorithm = "NLOPT_LD_AUGLAG")
+      ## According to constrOptim documentation, the constraints must be given 
+      ## by a matrix ui and ci.  It will then be enforced that ui %*% theta - ci
+      ## >= 0.  We must ensure the equation balances, i.e. the sum of the fixed 
+      ## and non-fixed elements, multiplied by their sign, is 0.  To impose 
+      ## this, we use two constraints:
+      ## 
+      ## 1. The sum of the fixed elements (with their signs) must be >= the sum 
+      ## of the non-fixed elements (with their signs) minus a small number 
+      ## (arbitrarily choosen to be 0.0001).
+      ## 
+      ## 2. The negative sum of the fixed elements (with their signs) must be >=
+      ## the negative sum of the non-fixed elements (with their signs) minus a 
+      ## small number (arbitrarily choosen to be 0.0001).  With 1 and 2, we 
+      ## enforce that the imbalance will be very small.
+      ## 
+      ## 3.  Lastly, we also constrain every element individually by it's lower
+      ## bound.  This amounts to using an identity matrix to require each
+      ## element be greater than lbounds.
+      ##
+      optimizedResult = constrOptim(theta = initial[!fixedIndex],
+                                    f = functionToOptimize,
+                                    grad = NULL,
+                                    ui = rbind(sign[!fixedIndex], -sign[!fixedIndex],
+                                               diag(1, sum(!fixedIndex))),
+                                    ci = c(sum(-sign[fixedIndex] * initial[fixedIndex]) - .0001,
+                                           sum(sign[fixedIndex] * initial[fixedIndex]) - .0001,
+                                           lbounds[!fixedIndex])
       )
       
       output = param1 * scaleFactor
-      output[!fixedIndex] = optimizedResult$pars * scaleFactor
+      output[!fixedIndex] = optimizedResult$par * scaleFactor
       #prob = rep(1,N)
       #prob[!fixedIndex] = getProbability(output[!fixedIndex],
       #                                   param1[!fixedIndex] * scaleFactor,
@@ -235,4 +237,3 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
     })
   })
 }
-
