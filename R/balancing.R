@@ -76,7 +76,8 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
     ## Question, I had to round it, otherwise it didn't work, the sum was 0.469 for test1
     if (abs(sum(round(param1*sign))) < tol){
     #if (abs(sum(param1*sign)) < tol){
-      output = list(param1,rep(1,N))
+      #output = list(param1,rep(1,N))
+      output = list(param1)
       return(output) 
     } else {
       stop(paste0("All elements of the balancing cannot be fixed and not balanced, 
@@ -86,11 +87,12 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
     values = param1
     values[fixedIndex] = param1[fixedIndex]
     values[!fixedIndex] = sum(values[fixedIndex]*sign[fixedIndex])
-    prob = rep(1,N)
-    prob[!fixedIndex] = getProbability(values[!fixedIndex],
-                                       param1[!fixedIndex],
-                                       param2[!fixedIndex]) 
-    output = list(values,prob)
+    #prob = rep(1,N)
+    #prob[!fixedIndex] = getProbability(values[!fixedIndex],
+    #                                   param1[!fixedIndex],
+    #                                   param2[!fixedIndex]) 
+    #output = list(values,prob)
+    output = list(values)
     return(output)
   }, `3` = {
     switch(optimize, "L-BFGS-B" = {
@@ -130,7 +132,8 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
           }
           
       constraint = function(value){
-          sum(value * sign[!fixedIndex]) + sum(param1[fixedIndex] * sign[fixedIndex])
+          #sum(value * sign[!fixedIndex]) + sum(param1[fixedIndex] * sign[fixedIndex])
+        sum(value * sign, param1[fixedIndex])
       }
           
       ## Scale parameters    
@@ -168,12 +171,12 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
       
       output = param1 * scaleFactor
       output[!fixedIndex] = optimizedResult$pars * scaleFactor
-      prob = rep(1,N)
-      prob[!fixedIndex] = getProbability(output[!fixedIndex],
-                                         param1[!fixedIndex] * scaleFactor,
-                                         param2[!fixedIndex] * scaleFactor) 
-      final = list(output,prob)
-      return(final)
+      #prob = rep(1,N)
+      #prob[!fixedIndex] = getProbability(output[!fixedIndex],
+      #                                   param1[!fixedIndex] * scaleFactor,
+      #                                   param2[!fixedIndex] * scaleFactor) 
+      #final = list(output,prob)
+      return(output)
     })
   })
 }
