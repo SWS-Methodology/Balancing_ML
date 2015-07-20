@@ -132,8 +132,8 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
           }
           
       constraint = function(value){
-          #sum(value * sign[!fixedIndex]) + sum(param1[fixedIndex] * sign[fixedIndex])
-        sum(value * sign, param1[fixedIndex])
+        sum(value * sign[!fixedIndex]) + sum(param1[fixedIndex] * sign[fixedIndex])
+        # sum(value * sign, param1[fixedIndex])
       }
           
       ## Scale parameters    
@@ -167,6 +167,61 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
                                       control = list(tol = 1e-8),
                                       LB = lbounds[!fixedIndex],
                                       UB = ubounds[!fixedIndex]
+      )
+      
+      output = param1 * scaleFactor
+      output[!fixedIndex] = optimizedResult$pars * scaleFactor
+      #prob = rep(1,N)
+      #prob[!fixedIndex] = getProbability(output[!fixedIndex],
+      #                                   param1[!fixedIndex] * scaleFactor,
+      #                                   param2[!fixedIndex] * scaleFactor) 
+      #final = list(output,prob)
+      return(output)
+    },
+    "constrOptim" = {
+      ##' Function to Optimize
+      ##' 
+      ##' @param value A vector of the non-fixed values to optimize.
+      functionToOptimize = function(value){
+            densities = ifelse(dist[!fixedIndex] == "Normal",
+                               dnorm(value,
+                                     mean = param1[!fixedIndex],
+                                     sd = param2[!fixedIndex],
+                                     log = TRUE),
+                               NA)
+            #return(-sum(densities[!is.infinite(densities)]))
+            return(-sum(densities))
+      }
+      
+      ## Scale parameters
+      scaleFactor = max(abs(param1))
+      param1 = param1 / scaleFactor
+      param2 = param2 / scaleFactor
+      lbounds = lbounds / scaleFactor
+      ubounds = ubounds / scaleFactor
+      
+      initial = param1
+      if(forceInitialConstraint){
+        posSum = sum(param1[sign == 1])
+        negSum = sum(param1[sign == -1])
+        if(posSum > negSum & any(sign == -1 & !fixedIndex)){
+          initial[sign == -1 & !fixedIndex][1] = posSum - negSum +
+          initial[sign == -1 & !fixedIndex][1]
+        } else if(negSum > posSum & any(sign == 1 & !fixedIndex)){
+            initial[sign == 1 & !fixedIndex][1] = negSum - posSum +
+            initial[sign == 1 & !fixedIndex][1]
+        } else {
+            warning("Cannot easily force initial constraint to be satisfied, so ",
+                    "initializing with default parameters.")
+        }
+      }
+      
+      optimizedResult = nloptr::nloptr(x0 = initial[!fixedIndex],
+                                       eval_f = functionToOptimize,
+                                       eval_g_eq = constraint,
+                                       lb = lbounds[!fixedIndex],
+                                       ub = ubounds[!fixedIndex],
+                                       opts = list(algorithm = "NLOPT_LD_AUGLAG")
       )
       
       output = param1 * scaleFactor
