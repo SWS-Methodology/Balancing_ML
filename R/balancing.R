@@ -125,18 +125,8 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
       
       initial = param1
       if(forceInitialConstraint){
-        posSum = sum(param1[sign == 1])
-        negSum = sum(param1[sign == -1])
-        if(posSum > negSum & any(sign == -1 & !fixedIndex)){
-          initial[sign == -1 & !fixedIndex][1] = posSum - negSum +
-          initial[sign == -1 & !fixedIndex][1]
-        } else if(negSum > posSum & any(sign == 1 & !fixedIndex)){
-            initial[sign == 1 & !fixedIndex][1] = negSum - posSum +
-            initial[sign == 1 & !fixedIndex][1]
-        } else {
-            warning("Cannot easily force initial constraint to be satisfied, so ",
-                    "initializing with default parameters.")
-        }
+        initial = forceBalance(value = initial, sign = sign,
+                               fixed = fixedIndex, lowerBound = lbounds)
       }
       optimizedResult = Rsolnp::solnp(pars = initial[!fixedIndex],
                                       fun = functionToOptimize,
@@ -181,20 +171,8 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
       
       initial = param1
       if(forceInitialConstraint){
-        posSum = sum(param1[sign == 1])
-        negSum = sum(param1[sign == -1])
-        if(posSum > negSum & any(sign == -1 & !fixedIndex)){
-          initial[sign == -1 & !fixedIndex][1] = posSum - negSum +
-          initial[sign == -1 & !fixedIndex][1]
-        } else if(negSum > posSum & any(sign == 1 & !fixedIndex)){
-            initial[sign == 1 & !fixedIndex][1] = negSum - posSum +
-            initial[sign == 1 & !fixedIndex][1]
-        } else {
-            ## Must raise an error here, as not satisfying the constraints will
-            ## kill our optimizer.
-            stop("Cannot easily force initial constraint to be satisfied, so ",
-                    "initializing with default parameters.")
-        }
+        initial = forceBalance(value = initial, sign = sign,
+                               fixed = fixedIndex, lowerBound = lbounds)
       }
       
       ## According to constrOptim documentation, the constraints must be given 
