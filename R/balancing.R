@@ -15,7 +15,7 @@
 ##' @param optimize A string with the method of optimization of the Maximum 
 ##'   Likelihood, default solnp (Rsolnp dependency).  Must be one of "solnp", 
 ##'   "L-BFGS-B" (uses optim and is NOT recommended, as it hasn't been tested 
-##'   thoroughly and doesn't enforce all constraints), or "constrOptim" (using
+##'   thoroughly and doesn't enforce all constraints), or "constrOptim" (using 
 ##'   constrOptim from base package).
 ##' @param lbounds A Vector of the lower bounds for each element. These values 
 ##'   should all be numeric
@@ -27,7 +27,16 @@
 ##'   not be possible.  If not, a warning is given and optimization proceeds 
 ##'   with the provided starting value.
 ##' @param tol The level of tolerance of the balancing (numeric). By default is 
-##'   set up to 1e-5
+##'   set up to 1e-5.  Currently only used if all elements are fixed, and in 
+##'   this case it provides the numerical tolerance requried to check if the 
+##'   balance is satisfied.
+##' @param constrTol The tolerance to pass to the constrOptim algorithm.  This 
+##'   algorithm does not force that the equation is balanced but rather forces 
+##'   that the equation is within +/- constrTol % of being balanced.  For 
+##'   example, if constrTol = 0.0001, then a tolerable error of .01% is allowed 
+##'   in the balance.  This should be set very small as later any lack of
+##'   balance is assigned to food, and such assignment could create negative
+##'   values.
 ##'   
 ##' @return A vector of the final balanced values
 ##'   
@@ -35,7 +44,7 @@
 balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
                      optimize = "solnp", lbounds = rep(0, length(param1)),
                      ubounds = rep(Inf, length(param1)),
-                     forceInitialConstraint = TRUE, tol = 1e-5){
+                     forceInitialConstraint = TRUE, tol = 1e-5, constrTol = 1e-8){
   ## Input Checks
   N = length(param1)
   #stopifnot(length(param1) == 1)
@@ -199,8 +208,8 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
                                     grad = NULL,
                                     ui = rbind(sign[!fixedIndex], -sign[!fixedIndex],
                                                diag(1, sum(!fixedIndex))),
-                                    ci = c(sum(-sign[fixedIndex] * initial[fixedIndex]) - .0001,
-                                           sum(sign[fixedIndex] * initial[fixedIndex]) - .0001,
+                                    ci = c(sum(-sign[fixedIndex] * initial[fixedIndex]) - constrTol,
+                                           sum(sign[fixedIndex] * initial[fixedIndex]) - constrTol,
                                            lbounds[!fixedIndex])
       )
       
