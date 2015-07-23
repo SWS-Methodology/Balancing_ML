@@ -44,7 +44,7 @@
 balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
                      optimize = "solnp", lbounds = rep(0, length(param1)),
                      ubounds = rep(Inf, length(param1)),
-                     forceInitialConstraint = TRUE, tol = 1e-5, constrTol = 1e-8){
+                     forceInitialConstraint = TRUE, tol = 1e-5, constrTol = 1e-6){
   ## Input Checks
   N = length(param1)
   #stopifnot(length(param1) == 1)
