@@ -182,6 +182,9 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
       if(forceInitialConstraint){
         initial = forceBalance(value = initial, sign = sign,
                                fixed = fixedIndex, lowerBound = lbounds)
+        ## Force values with a lower bound of 0 to be slightly above 0
+        initial[!fixedIndex & lbounds == 0] =
+          pmax(.Machine$double.eps, initial[!fixedIndex & lbounds == 0])
       }
       
       ## According to constrOptim documentation, the constraints must be given 
