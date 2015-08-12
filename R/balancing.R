@@ -165,6 +165,24 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
             return(-sum(densities))
       }
       
+#       ##' Gradient of Optimization
+#       ##' 
+#       ##' @param value A vector of the non-fixed values to optimize.
+#       ##' @return This function returns the gradient of the optimization
+#       ##'   function with respect to the input parameters.
+#       Gradient = function(value){
+#             ## Scale/center the value
+#             value = (value - param1[!fixedIndex])/param2[!fixedIndex]
+#             ## Use the fact that if phi(x) = standard normal distribution, then
+#             ## phi'(x) = x phi(x)
+#             gradDensity = ifelse(dist[!fixedIndex] == "Normal",
+#                                value * dnorm(value,
+#                                      mean = 0, sd = 1), # scaled already
+#                                NA)
+#             #return(-sum(densities[!is.infinite(densities)]))
+#             return(gradDensity)
+#       }
+      
       ## Scale parameters
       scaleFactor = max(abs(param1))
       param1 = param1 / scaleFactor
@@ -181,7 +199,8 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
       initial = param1
       if(forceInitialConstraint){
         initial = forceBalance(value = initial, sign = sign,
-                               fixed = fixedIndex, lowerBound = lbounds)
+                               fixed = fixedIndex, lowerBound = lbounds,
+                               standardError = param2)
         ## Force values with a lower bound of 0 to be slightly above 0
         initial[!fixedIndex & lbounds == 0] =
           pmax(.Machine$double.eps, initial[!fixedIndex & lbounds == 0])
@@ -213,7 +232,8 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
                                                diag(1, sum(!fixedIndex))),
                                     ci = c(sum(-sign[fixedIndex] * initial[fixedIndex]) - constrTol,
                                            sum(sign[fixedIndex] * initial[fixedIndex]) - constrTol,
-                                           lbounds[!fixedIndex])
+                                           lbounds[!fixedIndex]),
+                                    control = list(maxit = 10000)
       )
       
       output = param1 * scaleFactor

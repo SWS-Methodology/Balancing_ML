@@ -13,6 +13,11 @@
 ##' @param fixed A vector of logicals indicating whether values are fixed or
 ##'   adjustable.
 ##' @param lowerBound A vector of lower bounds for each element.
+##' @param standardError A vector of the same length as value, used to
+##'   prioritize where deltas should be allocated.  Differences will first be
+##'   allocated to the variable with the largest variability down to the
+##'   variable with the smallest variability.  Defaults to all 1's, as the
+##'   relative magnitude is all that matters for the sorting.
 ##'   
 ##' @example
 ##' ## Example of positive adjusted down
@@ -32,63 +37,62 @@
 ##'   the balance.
 ##'   
 
-forceBalance = function(value, sign, fixed, lowerBound = rep(0, length(value))){
+forceBalance = function(value, sign, fixed, lowerBound = rep(0, length(value)),
+                        upperBound = rep(Inf, length(value)),
+                        standardError = rep(1, length(value))){
     
     ## Input checks
     N = length(value)
     stopifnot(length(sign) == N)
     stopifnot(length(fixed) == N)
     stopifnot(length(lowerBound) == N)
+    stopifnot(length(standardError) == N)
     stopifnot(sign %in% c(-1, 1))
     stopifnot(is(fixed, "logical"))
     
     posSum = sum(value[sign == 1])
     negSum = sum(value[sign == -1])
-    ## How much is adjustable (downwards)?
-    posAdj = sum(value[sign == 1 & !fixed] - lowerBound[sign == 1 & !fixed])
-    negAdj = sum(value[sign == -1 & !fixed] - lowerBound[sign == -1 & !fixed])
     delta = posSum - negSum
     ## Start with the passed value as the output, and adjust from here
     output = value
-    ## First two conditions will adjust up the negative/positive elements if
-    ## that is possible.  This will always be ok as long as there is a
-    ## negative/positive element that is not fixed.
     if(delta == 0){
         return(output)
-    } else if(delta > 0 & any(sign == -1 & !fixed)){
-        output[sign == -1 & !fixed][1] = delta +
-            output[sign == -1 & !fixed][1]
-    } else if(delta < 0 & any(sign == 1 & !fixed)){
-        output[sign == 1 & !fixed][1] = -delta +
-            output[sign == 1 & !fixed][1]
-    ## The next two conditions are trickier: we have to adjust elements
-    ## down, but we must also ensure they don't go below their lower bounds.
-    } else if(delta > 0 & posAdj > delta){
+    ## The next two conditions are trickier: we have to adjust elements either 
+    ## up or down, but we must also ensure they don't go outside their bounds.
+    } else if(delta != 0){
         ## How much can we adjust each element by?
-        posAdjByElement = (value - lowerBound) * (sign == 1 & !fixed)
+        posAdjByElement = ifelse(fixed, 0,
+                          ifelse(sign == 1, (upperBound - value),
+                          ifelse(sign == -1, (value - lowerBound), NA)))
+        negAdjByElement = ifelse(fixed, 0,
+                          ifelse(sign == 1, (value - lowerBound),
+                          ifelse(sign == -1, (upperBound - value), NA)))
         ## Iteratively allocate the difference to adjustable elements
+        adjustOrder = order(-standardError)
         i = 1
-        while(delta > 0){
-            currentAdj = min(delta, posAdjByElement[i])
-            output[i] = output[i] - currentAdj
-            delta = delta - currentAdj
-            i = i + 1
+        if(delta > 0){
+            while(delta > 0 & i <= N){
+                currentAdj = min(delta, negAdjByElement[adjustOrder[i]])
+                output[adjustOrder[i]] = output[adjustOrder[i]] -
+                    currentAdj * sign[adjustOrder[i]]
+                delta = delta - currentAdj
+                i = i + 1
+            }
+        } else {
+            while(delta < 0 & i <= N){
+                currentAdj = min(abs(delta), posAdjByElement[adjustOrder[i]])
+                output[adjustOrder[i]] = output[adjustOrder[i]] +
+                    currentAdj * sign[adjustOrder[i]]
+                delta = delta + currentAdj
+                i = i + 1
+            }
         }
-    } else if(delta < 0 & negAdj > delta){
-        ## How much can we adjust each element by?
-        negAdjByElement = (value - lowerBound) * (sign == -1 & !fixed)
-        ## Iteratively allocate the difference to adjustable elements
-        i = 1
-        while(delta < 0){
-            currentAdj = min(abs(delta), negAdjByElement[i])
-            output[i] = output[i] - currentAdj
-            delta = delta + currentAdj
-            i = i + 1
+        if(abs(delta) > 0){
+            ## Must raise an error here, as not satisfying the constraints will 
+            ## kill our optimizer.  We must have not been able to allocate
+            ## adjustments in the previous steps.
+            stop("Cannot force initial constraint to be satisfied.")
         }
-    } else {
-        ## Must raise an error here, as not satisfying the constraints will
-        ## kill our optimizer.
-        stop("Cannot force initial constraint to be satisfied.")
     }
     
     output
