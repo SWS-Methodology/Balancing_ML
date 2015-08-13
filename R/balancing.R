@@ -1,7 +1,5 @@
 ##' Balancing algorithm via Maximum Likelihood
 ##' 
-##' Taken mainly from allocateDelta.R in Aupus
-##' 
 ##' @param param1 A vector of the first parameter for each of the elements.  For
 ##'   a normal distribution, this is the mean.
 ##' @param param2 A vector of the second parameter for each of the elements. For
@@ -39,7 +37,7 @@
 ##'   values.
 ##'   
 ##' @return A vector of the final balanced values
-##'   
+##' 
 
 balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
                      optimize = "solnp", lbounds = rep(0, length(param1)),
@@ -86,6 +84,13 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
     output[!fixedIndex] = sum(output[fixedIndex]*sign[fixedIndex])
     return(output)
   }, `3` = {
+    ## If all distributions are normal, use the balancingNormal function which
+    ## analytically finds the solution.
+    if(all(dist == "Normal")){
+      soln = balancingNormal(param1 = param1, param2 = param2, sign = sign,
+                             lbounds = lbounds, ubounds = ubounds)
+      return(soln)
+    }
     switch(optimize, "L-BFGS-B" = {
       functionToOptimize = function(value){
         ## We must have sum(value * sign) = 0 if all elements are included. 
