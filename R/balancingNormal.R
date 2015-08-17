@@ -63,11 +63,10 @@ balancingNormal = function(param1, param2, sign,
         solution[solution > ubounds] = ubounds[solution > ubounds]
         ## Resolve (i.e. reallocate new residual to elements that did not
         ## violate bounds).
-        solution[!failedCases] = balancingNormal(param1 = param1[!failedCases],
-                                                 param2 = param2[!failedCases],
-                                                 sign = sign[!failedCases],
-                                                 lbounds = lbounds[!failedCases],
-                                                 ubounds = ubounds[!failedCases])
+        solution = balancingNormal(param1 = solution,
+                                   param2 = ifelse(failedCases, 0, param2),
+                                   sign = sign, lbounds = lbounds,
+                                   ubounds = ubounds)
     }
     return(solution)
 }
