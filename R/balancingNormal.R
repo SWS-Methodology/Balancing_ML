@@ -48,6 +48,9 @@ balancingNormal = function(param1, param2, sign,
     ## called directly (but rather called from balancing()).
     
     imbalance = param1 %*% sign
+    if(all(param2 == 0) & imbalance != 0){
+        stop("Balance was not possible because of constraints.")
+    }
     ## Initialize solution
     solution = param1
     weight = param2^2
@@ -65,8 +68,6 @@ balancingNormal = function(param1, param2, sign,
                                                  sign = sign[!failedCases],
                                                  lbounds = lbounds[!failedCases],
                                                  ubounds = ubounds[!failedCases])
-    } else {
-        return(solution)
     }
-    stop("This point should never be reached in balancingNormal.R!")
+    return(solution)
 }
