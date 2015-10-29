@@ -1,0 +1,6 @@
+README.md
+.git
+misc
+Data
+^.*\.Rproj$
+^\.Rproj\.user$

@@ -28,7 +28,7 @@
 ##'   
 ##' @return A vector of the final balanced values
 ##'   
-##' @example
+##' @examples
 ##' 
 ##' # Production, Imports, Exports, Stock, Food, Processing, Feed, Waste,
 ##' # Seed, Industrial, Tourist

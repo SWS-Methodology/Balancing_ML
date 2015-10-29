@@ -13,25 +13,26 @@
 ##' @param fixed A vector of logicals indicating whether values are fixed or
 ##'   adjustable.
 ##' @param lowerBound A vector of lower bounds for each element.
+##' @param upperBound A vector of upper bounds for each element.
 ##' @param standardError A vector of the same length as value, used to
 ##'   prioritize where deltas should be allocated.  Differences will first be
 ##'   allocated to the variable with the largest variability down to the
 ##'   variable with the smallest variability.  Defaults to all 1's, as the
 ##'   relative magnitude is all that matters for the sorting.
 ##'   
-##' @example
+##' @examples
 ##' ## Example of positive adjusted down
 ##' forceBalance(value = c(100, 10, 30, 60), sign = c(1, 1, -1, -1),
-##'              fixed = c(F, T, T, T), lowerBound = c(0,0,0,0))
+##'              fixed = c(FALSE, TRUE, TRUE, TRUE), lowerBound = c(0,0,0,0))
 ##' ## Example of negative adjusted down
 ##' forceBalance(value = c(100, 10, 50, 80), sign = c(1, 1, -1, -1),
-##'              fixed = c(T, T, F, T), lowerBound = c(0,0,0,0))
+##'              fixed = c(TRUE, TRUE, FALSE, TRUE), lowerBound = c(0,0,0,0))
 ##' ## Example of multiple adjustments
 ##' forceBalance(value = c(10, 10, 30, 50), sign = c(1, 1, -1, -1),
-##'              fixed = c(T, T, F, F), lowerBound = c(0,0,0,0))
+##'              fixed = c(TRUE, TRUE, FALSE, FALSE), lowerBound = c(0,0,0,0))
 ##' ## Example of non-zero lower bound
 ##' forceBalance(value = c(10, 10, 30, 50), sign = c(1, 1, -1, -1),
-##'              fixed = c(T, T, T, F), lowerBound = c(0,0,0,-Inf))
+##'              fixed = c(TRUE, TRUE, TRUE, FALSE), lowerBound = c(0,0,0,-Inf))
 ##' 
 ##' @return A vector of the same length as value, with values updated to satisfy
 ##'   the balance.
