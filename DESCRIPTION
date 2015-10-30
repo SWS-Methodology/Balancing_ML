@@ -9,7 +9,8 @@ Description: Provides all the functions to perform balancing of the food balance
 URL: https://github.com/SWS-Methodology/faoswsBalancing/
 License: GPL (>= 3)
 Depends:
-    Rsolnp (>= 1.15)
+    Rsolnp (>= 1.15),
+    ggplot2
 LazyData: yes
 ZipData: no
 VignetteBuilder: knitr

@@ -7,7 +7,7 @@
 balancing(param1, param2, sign, dist = rep("Normal", length(param1)),
   optimize = "solnp", lbounds = rep(0, length(param1)), ubounds = rep(Inf,
   length(param1)), forceInitialConstraint = TRUE, tol = 1e-05,
-  constrTol = 1e-06)
+  constrTol = 1e-06, plot = FALSE, plotSigma = 3)
 }
 \arguments{
 \item{param1}{A vector of the first parameter for each of the elements.  For
@@ -48,12 +48,17 @@ this case it provides the numerical tolerance requried to check if the
 balance is satisfied.}
 
 \item{constrTol}{The tolerance to pass to the constrOptim algorithm.  This
-  algorithm does not force that the equation is balanced but rather forces
-  that the equation is within +/- constrTol % of being balanced.  For
-  example, if constrTol = 0.0001, then a tolerable error of .01% is allowed
-  in the balance.  This should be set very small as later any lack of
-  balance is assigned to food, and such assignment could create negative
-  values.}
+algorithm does not force that the equation is balanced but rather forces
+that the equation is within +/- constrTol % of being balanced.  For
+example, if constrTol = 0.0001, then a tolerable error of .01% is allowed
+in the balance.  This should be set very small as later any lack of
+balance is assigned to food, and such assignment could create negative
+values.}
+
+\item{plot}{Logical.  Should a plot be generated which shows the result of
+the balancing?}
+
+\item{plotSigma}{A plotting parameter.  See ?plotBalancing.}
 }
 \value{
 A vector of the final balanced values
