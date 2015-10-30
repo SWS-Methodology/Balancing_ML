@@ -17,6 +17,8 @@
 ##'   
 ##' @return No value is returned, but a plot is generated.
 ##'   
+##' @import ggplot2
+##' 
 
 plotBalancing = function(param1, param2, final, plotSigma = 3){
     
@@ -42,7 +44,7 @@ plotBalancing = function(param1, param2, final, plotSigma = 3){
     linesFinal = merge(linesFinal, data.frame(y = c(0, Inf)))
     
     print(ggplot(grid, aes(x = x, y = y, color = factor(index))) +
-        geom_line() + facet_wrap( ~ index, scale = "free_x") +
+        geom_line() + facet_wrap( ~ index, scales = "free_x") +
         guides(color = FALSE) +
         geom_line(data = linesExpected, aes(linetype = "Expected Value")) +
         geom_line(data = linesFinal, aes(linetype = "Adjusted Value")) +

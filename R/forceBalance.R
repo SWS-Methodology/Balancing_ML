@@ -22,16 +22,16 @@
 ##'   
 ##' @examples
 ##' ## Example of positive adjusted down
-##' forceBalance(value = c(100, 10, 30, 60), sign = c(1, 1, -1, -1),
+##' faoswsBalancing:::forceBalance(value = c(100, 10, 30, 60), sign = c(1, 1, -1, -1),
 ##'              fixed = c(FALSE, TRUE, TRUE, TRUE), lowerBound = c(0,0,0,0))
 ##' ## Example of negative adjusted down
-##' forceBalance(value = c(100, 10, 50, 80), sign = c(1, 1, -1, -1),
+##' faoswsBalancing:::forceBalance(value = c(100, 10, 50, 80), sign = c(1, 1, -1, -1),
 ##'              fixed = c(TRUE, TRUE, FALSE, TRUE), lowerBound = c(0,0,0,0))
 ##' ## Example of multiple adjustments
-##' forceBalance(value = c(10, 10, 30, 50), sign = c(1, 1, -1, -1),
+##' faoswsBalancing:::forceBalance(value = c(10, 10, 30, 50), sign = c(1, 1, -1, -1),
 ##'              fixed = c(TRUE, TRUE, FALSE, FALSE), lowerBound = c(0,0,0,0))
 ##' ## Example of non-zero lower bound
-##' forceBalance(value = c(10, 10, 30, 50), sign = c(1, 1, -1, -1),
+##' faoswsBalancing:::forceBalance(value = c(10, 10, 30, 50), sign = c(1, 1, -1, -1),
 ##'              fixed = c(TRUE, TRUE, TRUE, FALSE), lowerBound = c(0,0,0,-Inf))
 ##' 
 ##' @return A vector of the same length as value, with values updated to satisfy

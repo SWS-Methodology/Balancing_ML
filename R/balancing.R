@@ -40,7 +40,9 @@
 ##' @param plotSigma A plotting parameter.  See ?plotBalancing.
 ##'   
 ##' @return A vector of the final balanced values
-##'   
+##' 
+##' @export
+##' 
 
 balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
                      optimize = "solnp", lbounds = rep(0, length(param1)),
