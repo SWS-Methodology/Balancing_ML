@@ -19,6 +19,8 @@
 ##'   
 ##' @import ggplot2
 ##' 
+##' @export
+##' 
 
 plotBalancing = function(param1, param2, final, plotSigma = 3){
     

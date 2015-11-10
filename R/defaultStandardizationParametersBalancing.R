@@ -5,6 +5,8 @@
 ##' 
 ##' @return A list with the standardization parameters for the balancing.
 ##' 
+##' @export
+##' 
 
 defaultStandardizationParametersBalancing = function(){
   geoVar = "geographicAreaM49"
