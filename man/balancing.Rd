@@ -64,6 +64,6 @@ the balancing?}
 A vector of the final balanced values
 }
 \description{
-Balancing algorithm via Maximum Likelihood
+This function balances the data using maximum likelihood.
 }
 

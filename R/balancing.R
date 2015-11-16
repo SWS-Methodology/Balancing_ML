@@ -1,5 +1,7 @@
 ##' Balancing algorithm via Maximum Likelihood
 ##' 
+##' This function balances the data using maximum likelihood.
+##' 
 ##' @param param1 A vector of the first parameter for each of the elements.  For
 ##'   a normal distribution, this is the mean.
 ##' @param param2 A vector of the second parameter for each of the elements. For
@@ -116,9 +118,9 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
         residual = -sum(output * sign[-N])
         output = c(output, residual * sign[N])
       }, "solnp" = {
-        ##' Function to Optimize
-        ##' 
-        ##' @param value A vector of the non-fixed values to optimize.
+        ## Function to Optimize
+        ## 
+        ## @param value A vector of the non-fixed values to optimize.
         functionToOptimize = function(value){
               densities = ifelse(dist[!fixedIndex] == "Normal",
                                  dnorm(value,
@@ -159,9 +161,9 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
         output[!fixedIndex] = optimizedResult$pars * scaleFactor
       },
       "constrOptim" = {
-        ##' Function to Optimize
-        ##' 
-        ##' @param value A vector of the non-fixed values to optimize.
+        ## Function to Optimize
+        ## 
+        ## @param value A vector of the non-fixed values to optimize.
         functionToOptimize = function(value){
               densities = ifelse(dist[!fixedIndex] == "Normal",
                                  dnorm(value,
@@ -173,11 +175,11 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
               return(-sum(densities))
         }
         
-#         ##' Gradient of Optimization
-#         ##' 
-#         ##' @param value A vector of the non-fixed values to optimize.
-#         ##' @return This function returns the gradient of the optimization
-#         ##'   function with respect to the input parameters.
+#         ## Gradient of Optimization
+#         ## 
+#         ## @param value A vector of the non-fixed values to optimize.
+#         ## @return This function returns the gradient of the optimization
+#         ##   function with respect to the input parameters.
 #         Gradient = function(value){
 #               ## Scale/center the value
 #               value = (value - param1[!fixedIndex])/param2[!fixedIndex]
