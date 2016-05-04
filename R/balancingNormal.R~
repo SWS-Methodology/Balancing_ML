@@ -51,10 +51,6 @@ balancingNormal = function(param1, param2, sign,
     if(all(param2 == 0) & imbalance != 0){
         stop("Balance was not possible because of constraints.")
     }
-
-    if(any(is.infinite(param1)) | any(is.infinite(param2))){
-        stop("Balance was not possible because presence of infinite values in means or param1 or param2")
-    }
     ## Initialize solution
     solution = param1
     weight = param2^2
