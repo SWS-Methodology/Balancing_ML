@@ -1,7 +1,7 @@
 ---
 title: "Balancing and standardization"
-author: "Josh Browning"
-date: "October 30, 2015"
+author: "Josh Browning & Marco Garieri"
+date: "July 27, 2016"
 output: pdf_document
 ---
 
@@ -31,7 +31,7 @@ Firstly, measured values are mostly limited to variables on the supply side (pro
 
 Secondly, it is not possible to include values for all variables in the balance, at least if they enter the identity as point estimates. If that were the case, the balance would not have a solution unless one variable is left as a "balancing item". Inevitably, this balancing item assumes all measurement errors, implicit or explicit in all other variables.  If all the estimates for the other elements are unbiased, i.e. have measurement errors with expected value 0, then the expected value for the error of the balancing item/residual will be 0.  However, the variance of the error for the balancing item/residual is the sum of the variance of the measurement errors for all other elements; this will inevitably cause a large variability in the estimate of the balancing item/residual.  
 
-Thirdly, and in view of the fact that the balancing item assumes the measurement errors of all other variables, a prima facie case could be made that not all variables are equally suitable to function as balancing items. Intuitively, the variables with higher degrees of annual variability would be more suitable as balancing items. The underlying rationale for such a choice would be the fact that the residual/balancing item assumes the sum of all measurement errors, and is therefore more likely to exhibit greater year-to-year variability. 
+% Thirdly, and in view of the fact that the balancing item assumes the measurement errors of all other variables, a prima facie case could be made that not all variables are equally suitable to function as balancing items. Intuitively, the variables with higher degrees of annual variability would be more suitable as balancing items. The underlying rationale for such a choice would be the fact that the residual/balancing item assumes the sum of all measurement errors, and is therefore more likely to exhibit greater year-to-year variability. 
 
 In practice, however, the choice of a variable as a balancing item often reflects the availability of data (or the lack thereof), rather than a clear economic rationale and empirical evidence.  It is therefore not surprising that different SUA compilers/SUA approaches have chosen different variables as their balancing items. USDA's balances, for instance, use feed (and residual use) as the balancing item, while the FBS often used food to balance supply and demand. Conveniently, the XCBS approach often chooses whatever variable is not explicitly available. Clearly, none of these approaches overcomes the problem of accumulating measurement errors in the balancing item. No matter which variable is used as the balancing item, this variable is fraught with the measurement errors of all other variables. In the context of the Food Balance Sheets, this means that using food as the balancing item would therefore be the least suitable solution. 
 
