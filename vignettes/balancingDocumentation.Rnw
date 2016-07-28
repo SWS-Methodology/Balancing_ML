@@ -270,10 +270,12 @@ FBS compilers at country level may want to use the FAO confidence intervals as a
 
 \section{Implementation}
 R code has been developed by FAO in the form of an R package which implements this algorithm.  This section details several use cases/examples of how the function works. The R package is not a module by itself, and in the future this need to be take into account.
+The main function of the package is the {\tt balancing.R}. This function is part of a wrapper in the Standardization module. The balacing function allow to use only normal distribution 
 
 
 \newpage
 \section{Future work}
+In Kao's document "Parameterisation of Food Balance Sheet Uncertainty Distribution", additional effort has been made to address several problems: numerical, information
 
 
 
