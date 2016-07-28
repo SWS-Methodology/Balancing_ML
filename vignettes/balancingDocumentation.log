@@ -1,4 +1,4 @@
-This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=pdflatex 2009.1.10)  28 JUL 2016 11:40
+This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=pdflatex 2009.1.10)  28 JUL 2016 12:50
 entering extended mode
  %&-line parsing enabled.
 **balancingDocumentation.tex
@@ -628,7 +628,7 @@ Overfull \hbox (5.47499pt too wide) has occurred while \output is active
  []
 
 [7]
-LaTeX Font Info:    Try loading font information for T1+pcr on input line 257.
+LaTeX Font Info:    Try loading font information for T1+pcr on input line 274.
  (/usr/local/texlive/2007/texmf-dist/tex/latex/psnfss/t1pcr.fd
 File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
 )
@@ -637,29 +637,24 @@ Overfull \hbox (5.47499pt too wide) has occurred while \output is active
  []
 
 [8]
+Underfull \hbox (badness 10000) in paragraph at lines 297--302
+
+ []
+
+
 Overfull \hbox (5.47499pt too wide) has occurred while \output is active
 [][] \T1/pplx/m/n/10.95 9
  []
 
-[9]
-Underfull \hbox (badness 10000) in paragraph at lines 315--320
-
- []
-
-
-Overfull \hbox (10.94998pt too wide) has occurred while \output is active
-[]\T1/pplx/m/n/10.95 10 []
- []
-
-[10] (./balancingDocumentation.aux) )
+[9] (./balancingDocumentation.aux) )
 (\end occurred when \ifcase on line 111 was incomplete)
 (\end occurred when \ifx on line 111 was incomplete)
 (\end occurred when \ifx on line 111 was incomplete) 
 Here is how much of TeX's memory you used:
- 7311 strings out of 94073
- 103560 string characters out of 1162984
+ 7301 strings out of 94073
+ 103166 string characters out of 1162984
  185976 words of memory out of 1500000
- 10361 multiletter control sequences out of 10000+50000
+ 10358 multiletter control sequences out of 10000+50000
  45313 words of font info for 84 fonts, out of 1200000 for 2000
  645 hyphenation exceptions out of 8191
  35i,10n,34p,1374b,435s stack positions out of 5000i,500n,6000p,200000b,5000s
@@ -672,9 +667,9 @@ pfb></usr/local/texlive/2007/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></us
 r/local/texlive/2007/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local
 /texlive/2007/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb></usr/local/texliv
 e/2007/texmf-dist/fonts/type1/urw/palatino/uplri8a.pfb>
-Output written on balancingDocumentation.pdf (10 pages, 128801 bytes).
+Output written on balancingDocumentation.pdf (9 pages, 121153 bytes).
 PDF statistics:
- 178 PDF objects out of 1000 (max. 8388607)
- 49 named destinations out of 1000 (max. 131072)
- 125 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 157 PDF objects out of 1000 (max. 8388607)
+ 42 named destinations out of 1000 (max. 131072)
+ 101 words of extra memory for PDF output out of 10000 (max. 10000000)
 

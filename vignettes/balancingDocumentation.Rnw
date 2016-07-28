@@ -242,42 +242,55 @@ While the FAO Statistics Division has only limited access to primary data for an
 \item Imputing data. The FAO Statistics Division imputes data when they are not available from primary sources or, importantly, country questionnaires. This holds for variables for which no questionnaires are dispatched, or for data not covered in questionnaires; it also includes imputed data for countries not replying to questionnaires at all. Again, there are two basic cases to be distinguished with regard to gauging the measurement error. Some imputation methods actually provide an estimate for the measurement error. This is, for instance, the case for feed use. Others do not provide any estimate for the accuracy of the estimate or such measurement errors are difficult to extract from the method (e.g. the imputation of production). In these cases, the only gauge for the measurement error can come from the reliability of a country's statistical system. 
 \end{itemize}
 
-\subsection{A hierarchical system of flags}
-The proposed balancing mechanism requires an FBS compiler to provide an estimate for a confidence interval around an initial estimate of a variable. These confidence intervals reflect the degree of reliability of such an initial estimate. FBS compilers can revert to different sources and employ strategies to arrive at quantitative estimates for these reliability measures; they may be able to use information about the measurement errors collected with the primary data (e.g. a household survey), assign confidence ranges based on the imputation methods or, in the absence of specific information, simply assign confidence ranges in line with their prior knowledge of the way an estimate was produced, reflecting the approach used, the quality of the statistical system in general or for a particular survey, etc.  
-
-Given the need to assign such confidence values in the absence of country-specific information at FAO, the confidence intervals assigned by FAO are based on two readily available factors. 
-
-\subsection{The FAO metadata/flags system}
-The FAO Statistics Division collects information from different sources and assigns different reliability levels to the various sources. These reliability levels are encapsulated in the FAO "flags" system. The flags are used to approximate confidence ranges as a first step.
-
-Five levels of confidence are distinguished as default values to arrive at confidence intervals around an expected value. The highest confidence is placed on official numbers/estimates, which would be taken as point estimates without a confidence interval, while the lowest confidence is placed on estimated data. All confidence estimates are further modified by an allowance for the quality of a country's statistical system, which results in a hierarchy created by the quality of a statistical system nested in the confidence intervals arising from the general flags. The highest trust/narrowest confidence intervals are assigned to data from countries with excellent statistical systems, while the lowest confidence/widest intervals are assigned to imputed or missing data from countries with very weak statistical systems. An example, categorizing these levels of confidence is provided below:
-
-<<my-label, eval=TRUE, echo = F>>=
-tab = data.frame(Source = c("Official", "Semi-official", "Imputed",
-                            "Estimated", "Missing"),
-                 Confidence = c(1, 0.9, 0.85, 0.6, NA),
-                 Error = c(0,.1, .15, .4, NA))
-colnames(tab)[3] = "Implied Measurement Error"
-tab[1:4, 3] = paste0(tab[1:4, 3]*100, "%")
-knitr::kable(tab, align = c("l", "r", "r"),
-             caption = "Confidence levels based on FAOSTAT flags")
-@
-
-\subsection{Quality of a country's statistical system}
-To capture cross-country differences for the same flag, information from the assessment of statistical systems from the Global Strategy has been used to fine-tune the levels of confidence and thus determine the final confidence intervals for every estimate. Most of the information was gleaned from the Country Assessment Questionnaires (CAQs) processed by the Global Strategy to improve Rural and Agricultural Statistics, which however do not provide a full global coverage.
-
-FBS compilers at country level may want to use the FAO confidence intervals as a first approximation of the quality of the estimates. Country level FBS compilers are likely to have more information available, and more reliable information, about their statistical system in general and individual FBS variables in particular. They are therefore strongly encouraged to carefully review the FAO confidence intervals, compare them with specific information available from their statistical system/experience and replace where appropriate.
+%' \subsection{A hierarchical system of flags}
+%' The proposed balancing mechanism requires an FBS compiler to provide an estimate for a confidence interval around an initial estimate of a variable. These confidence intervals reflect the degree of reliability of such an initial estimate. FBS compilers can revert to different sources and employ strategies to arrive at quantitative estimates for these reliability measures; they may be able to use information about the measurement errors collected with the primary data (e.g. a household survey), assign confidence ranges based on the imputation methods or, in the absence of specific information, simply assign confidence ranges in line with their prior knowledge of the way an estimate was produced, reflecting the approach used, the quality of the statistical system in general or for a particular survey, etc.  
+%' 
+%' Given the need to assign such confidence values in the absence of country-specific information at FAO, the confidence intervals assigned by FAO are based on two readily available factors. 
+%' 
+%' \subsection{The FAO metadata/flags system}
+%' The FAO Statistics Division collects information from different sources and assigns different reliability levels to the various sources. These reliability levels are encapsulated in the FAO "flags" system. The flags are used to approximate confidence ranges as a first step.
+%' 
+%' Five levels of confidence are distinguished as default values to arrive at confidence intervals around an expected value. The highest confidence is placed on official numbers/estimates, which would be taken as point estimates without a confidence interval, while the lowest confidence is placed on estimated data. All confidence estimates are further modified by an allowance for the quality of a country's statistical system, which results in a hierarchy created by the quality of a statistical system nested in the confidence intervals arising from the general flags. The highest trust/narrowest confidence intervals are assigned to data from countries with excellent statistical systems, while the lowest confidence/widest intervals are assigned to imputed or missing data from countries with very weak statistical systems. An example, categorizing these levels of confidence is provided below:
+%' 
+%' <<my-label, eval=TRUE, echo = F>>=
+%' tab = data.frame(Source = c("Official", "Semi-official", "Imputed",
+%'                             "Estimated", "Missing"),
+%'                  Confidence = c(1, 0.9, 0.85, 0.6, NA),
+%'                  Error = c(0,.1, .15, .4, NA))
+%' colnames(tab)[3] = "Implied Measurement Error"
+%' tab[1:4, 3] = paste0(tab[1:4, 3]*100, "%")
+%' knitr::kable(tab, align = c("l", "r", "r"),
+%'              caption = "Confidence levels based on FAOSTAT flags")
+%' @
+%' 
+%' \subsection{Quality of a country's statistical system}
+%' To capture cross-country differences for the same flag, information from the assessment of statistical systems from the Global Strategy has been used to fine-tune the levels of confidence and thus determine the final confidence intervals for every estimate. Most of the information was gleaned from the Country Assessment Questionnaires (CAQs) processed by the Global Strategy to improve Rural and Agricultural Statistics, which however do not provide a full global coverage.
+%' 
+%' FBS compilers at country level may want to use the FAO confidence intervals as a first approximation of the quality of the estimates. Country level FBS compilers are likely to have more information available, and more reliable information, about their statistical system in general and individual FBS variables in particular. They are therefore strongly encouraged to carefully review the FAO confidence intervals, compare them with specific information available from their statistical system/experience and replace where appropriate.
 
 \section{Implementation}
 R code has been developed by FAO in the form of an R package which implements this algorithm.  This section details several use cases/examples of how the function works. The R package is not a module by itself, and in the future this need to be take into account.
-The main function of the package is the {\tt balancing.R}. This function is part of a wrapper in the Standardization module. The balacing function allow to use only normal distribution 
+The main function of the package is the {\tt balancing.R}. This function is part of a wrapper in the Standardization module. The balacing function allow to use only normal distribution at the moment, and the main paramenters of the function are the following: with the following parameters:
+\begin{itemize}
+\item[{\bf param1}] Vector of means (default values: none)
+\item[{\bf param2}] Vector of standard deviations (default values: none)
+\item[{\bf sign}] Vector of signs for the balancing equation (default values: all positive)
+\item[{\bf dist}] Distribution type (default values: "Normal"), at the time being just Normal distribution is implemented
+\item[{\bf optimize}] Function to be used to optimize the maximum likelihood (default value: solnp). More details are within the code.
+\item[{\bf lbounds}] Lower bounds (default values: all zeros)
+\item[{\bf ubounds}] Upper bounds (default values: all infinity)
+\end{itemize}
 
 
 \newpage
 \section{Future work}
-In Kao's document "Parameterisation of Food Balance Sheet Uncertainty Distribution", additional effort has been made to address several problems: numerical, information
-
-
+In Kao's document "Parameterisation of Food Balance Sheet Uncertainty Distribution", additional effort has been made to address several problems: 
+\begin{itemize}
+\item Numerical problems
+\item Possibility to use any distribution
+\item Information of {\tt param2} from the flags.
+\end{itemize}
+This might be the best solution to be integrated in the balancing package. This has to be discussed further with management.
 
 \section*{Disclaimer}
 This Working Paper should not be reported as representing the official view of
