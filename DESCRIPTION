@@ -3,10 +3,8 @@ Type: Package
 Title: Package to Balance the Food Balance Sheet
 Version: 0.0.1
 Date: 2015-10-29
-Author: Marco Garieri <marco.garieri@fao.org>, Josh Browning
-    <joshua.browning@fao.org>
-Maintainer: Marco Garieri <marco.garieri@fao.org>, Josh Browning
-    <joshua.browning@fao.org>
+Authors@R: c(person("Marco", "Garieri", role = c("aut", "cre"), email ="marco.garieri@fao.org"),
+             person("Josh", "Browning", role = c("aut", "cre"), email = "joshua.browning@fao.org"))
 Description: Provides all the functions to perform balancing of the food balance
     sheets, assuming that each element of the FBS has an assumed distribution.
 URL: https://github.com/SWS-Methodology/faoswsBalancing/
