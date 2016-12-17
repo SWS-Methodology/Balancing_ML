@@ -3,20 +3,24 @@ Type: Package
 Title: Package to Balance the Food Balance Sheet
 Version: 0.0.1
 Date: 2015-10-29
-Authors@R: c(person("Marco", "Garieri", role = c("aut", "cre"), email ="marco.garieri@fao.org"),
-             person("Josh", "Browning", role = c("aut", "cre"), email = "joshua.browning@fao.org"))
+Authors@R: c(person("Marco", "Garieri", role = "aut", email ="marco.garieri@fao.org"),
+             person("Josh", "Browning", role = "aut", email = "joshua.browning@fao.org"),
+             person("Francesca", "Rosa", role = c("aut", "cre"), email = "francesca.rosa@fao.org"))
 Description: Provides all the functions to perform balancing of the food balance
     sheets, assuming that each element of the FBS has an assumed distribution.
-URL: https://github.com/SWS-Methodology/faoswsBalancing/
-License: GPL (>= 3)
+URL: https://github.com/SWS-Methodology/faoswsBalancing
+License: FAO
 Depends:
-    ggplot2
+    ggplot2,
+    testthat
+swsModuleDepends: 
+    faoswsUtil,
+    faoswsFlag
 Imports:
     Rsolnp (>= 1.15)
 LazyData: yes
 ZipData: no
 VignetteBuilder: knitr
 Suggests:
-    knitr,
-    testthat
-RoxygenNote: 5.0.0
+    knitr
+RoxygenNote: 5.0.1
