@@ -60,7 +60,7 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
   stopifnot(length(sign) == N)
   # This has to removed as soon as other distribution are available
   stopifnot(dist %in% "Normal")
-  stopifnot(sign %in% c(-1, 1))
+  stopifnot(sign %in% c(-1, 1,0))
   stopifnot(optimize %in% c("solnp", "L-BFGS-B", "constrOptim"))
   #if(any(dist == "Normal" & param2 < 1)){
   #  param2[dist == "Normal" & param2 < 1] = 1
@@ -95,7 +95,7 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
     ## If all distributions are normal, use the balancingNormal function which
     ## analytically finds the solution.
     if(all(dist == "Normal")){
-      output = balancingNormal(param1 = param1, param2 = param2, sign = sign,
+      output = balancingProportional(param1 = param1, param2 = param2, sign = sign,
                                lbounds = lbounds, ubounds = ubounds)
     } else {
       switch(optimize, "L-BFGS-B" = {
