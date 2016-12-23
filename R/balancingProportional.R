@@ -87,7 +87,7 @@ balancingProportional = function(param1, param2, sign,
   ## Initialize solution
 
   
-  weight = param2
+  weight =  abs(param2)
   weight = weight / sum(weight)
   solution = solution + imbalance * weight * (-sign)
   failedCases = solution < lbounds | solution > ubounds

@@ -57,7 +57,7 @@ balancingNormal = function(param1, param2, sign,
     }
     ## Initialize solution
     solution = param1
-    weight = param2^2
+    weight = param2
     weight = weight / sum(weight)
     solution = solution + imbalance * weight * (-sign)
     failedCases = solution < lbounds | solution > ubounds
