@@ -57,7 +57,7 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
   #stopifnot(length(param1) == 1)
   stopifnot(length(param2) == N)
   stopifnot(length(dist) == N)
-  stopifnot(length(sign) == N)
+  stopifnot(length(sign) == N) 
   # This has to removed as soon as other distribution are available
   stopifnot(dist %in% "Normal")
   stopifnot(sign %in% c(-1, 1,0))
