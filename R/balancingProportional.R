@@ -88,7 +88,11 @@ balancingProportional = function(param1, param2, sign,
 
   
   weight =  abs(param2)
-  weight = weight / sum(weight)
+  if(all(weight==0)){
+    
+    weight=weight
+  } else {weight = weight / sum(weight)}
+  
   solution = solution + imbalance * weight * (-sign)
   failedCases = solution < lbounds | solution > ubounds
   if(any(failedCases)){
