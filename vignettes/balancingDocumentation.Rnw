@@ -304,6 +304,3 @@ changes and updates.
 
 
 \end{document}
-Status API Training Shop Blog About
-ÔøΩ 2015 GitHub, Inc. Terms Privacy Security Contact
-%

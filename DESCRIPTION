@@ -19,7 +19,6 @@ Imports:
     Rsolnp (>= 1.15)
 LazyData: yes
 ZipData: no
-VignetteBuilder: knitr
 Suggests:
     knitr,
     testthat

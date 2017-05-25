@@ -1,6 +1,8 @@
-README.md
-.git
+^flagVariability\.R$
+README\.md
+\.git
 misc
 Data
+^vignettes$
 ^.*\.Rproj$
 ^\.Rproj\.user$
