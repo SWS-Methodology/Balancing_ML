@@ -17,10 +17,11 @@ swsModuleDepends:
     faoswsUtil,
     faoswsFlag
 Imports:
-    Rsolnp (>= 1.15)
+    Rsolnp (>= 1.15),
+    data.table
 LazyData: yes
 ZipData: no
 VignetteBuilder: knitr
 Suggests:
     knitr
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

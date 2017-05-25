@@ -49,7 +49,7 @@ balancingProportional = function(param1, param2, sign,
   
   imbalance = param1 %*% sign
   
-  signSupply= copy(sign)
+  signSupply= sign
   signSupply[signSupply<0]=0
   
   supply= param1 %*% signSupply
@@ -61,7 +61,7 @@ balancingProportional = function(param1, param2, sign,
   if(imbalance>0 )
   {
 
-    signResidual=copy(sign)
+    signResidual=sign
     signResidual[signResidual==0]=100
     signResidual[signResidual<100]=0
     signResidual[signResidual==100]=1
