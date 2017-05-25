@@ -11,17 +11,16 @@ Description: Provides all the functions to perform balancing of the food balance
 URL: https://github.com/SWS-Methodology/faoswsBalancing
 License: FAO
 Depends:
-    ggplot2,
-    testthat
+    ggplot2
 swsModuleDepends: 
     faoswsUtil,
     faoswsFlag
 Imports:
-    Rsolnp (>= 1.15),
-    data.table
+    Rsolnp (>= 1.15)
 LazyData: yes
 ZipData: no
 VignetteBuilder: knitr
 Suggests:
-    knitr
+    knitr,
+    testthat
 RoxygenNote: 6.0.1
