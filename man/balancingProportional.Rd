@@ -18,10 +18,10 @@ a normal distribution, this is the standard deviation.}
 be +1 or -1, and they indicate if Delta_1, Delta_2, ... should be 
 pre-multiplied by a negative or not.  Usually, these will all be +1.}
 
-\item{lbounds}{A Vector of the lower bounds for each element. These values 
+\item{lbounds}{A vector of the lower bounds for each element. These values 
 should all be numeric}
 
-\item{ubounds}{A Vector of the upper bounds for each element. These values 
+\item{ubounds}{A vector of the upper bounds for each element. These values 
 should all be numeric}
 }
 \value{
@@ -55,3 +55,4 @@ lbounds = c(0, 0, 0, -Inf, 0, 0, 0, 0, 0, 0, 0)
 ubounds = rep(Inf, 11)
 
 }
+

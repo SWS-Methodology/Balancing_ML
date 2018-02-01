@@ -32,9 +32,13 @@ This function has more or less the same inputs as balancing(), with the
 exception of a handful of the tuning options that don't apply.  If all 
 distributions are normal and unbounded, there is a simple analytical 
 solution to the balancing equation.  Even if we have bounds, we can 
-iteratively find the optimal solution by 1. optimizing analytically and 
-ignoring bounds, 2. adjust elements that fall outside of their bounds, 3. 
-repeat.  We will have at most as many iterations as elements and thus it 
+iteratively find the optimal solution by:
+\itemize{
+  \item 1. optimizing analytically and ignoring bounds
+  \item 2. adjusting elements that fall outside of their bounds
+  \item 3. repeating the above steps
+}
+We will have at most as many iterations as elements and thus it 
 will be very fast, and we are also guaranteed to find the true optimum.
 }
 \details{
@@ -55,3 +59,4 @@ lbounds = c(0, 0, 0, -Inf, 0, 0, 0, 0, 0, 0, 0)
 ubounds = rep(Inf, 11)
 
 }
+

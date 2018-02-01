@@ -21,9 +21,9 @@
 ##' @param sign A vector of the sign of each element.  These values should all 
 ##'   be +1 or -1, and they indicate if Delta_1, Delta_2, ... should be 
 ##'   pre-multiplied by a negative or not.  Usually, these will all be +1.
-##' @param lbounds A Vector of the lower bounds for each element. These values 
+##' @param lbounds A vector of the lower bounds for each element. These values 
 ##'   should all be numeric
-##' @param ubounds A Vector of the upper bounds for each element. These values 
+##' @param ubounds A vector of the upper bounds for each element. These values 
 ##'   should all be numeric
 ##'   
 ##' @return A vector of the final balanced values
