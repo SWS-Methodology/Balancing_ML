@@ -1,48 +1,47 @@
 ##' Balancing algorithm via Maximum Likelihood
-##' 
+##'
 ##' This function balances the data using maximum likelihood.
-##' 
-##' @param param1 A vector of the first parameter for each of the elements.  For
+##'
+##' @param param1 A vector of the first parameter for each of the elements. For
 ##'   a normal distribution, this is the mean.
 ##' @param param2 A vector of the second parameter for each of the elements. For
 ##'   a normal distribution, this is the standard deviation.
-##' @param dist A vector of the name of the distribution for each distribution. 
+##' @param dist A vector of the name of the distribution for each distribution.
 ##'   Currently, only "Normal" is implemented. Working in progress for different
 ##'   distribution
-##' @param sign A vector of the sign of each element.  These values should all 
-##'   be +1 or -1, and they indicate if Delta_1, Delta_2, ... should be 
-##'   pre-multiplied by a negative or not.  Usually, these will all be +1.
-##' @param optimize A string with the method of optimization of the Maximum 
-##'   Likelihood, default solnp (Rsolnp dependency).  Must be one of "solnp", 
-##'   "L-BFGS-B" (uses optim and is NOT recommended, as it hasn't been tested 
-##'   thoroughly and doesn't enforce all constraints), or "constrOptim" (using 
+##' @param sign A vector of the sign of each element. These values should all be
+##'   +1 or -1, and they indicate if Delta_1, Delta_2, ... should be
+##'   pre-multiplied by a negative or not. Usually, these will all be +1.
+##' @param optimize A string with the method of optimization of the Maximum
+##'   Likelihood, default solnp (Rsolnp dependency). Must be one of "solnp",
+##'   "L-BFGS-B" (uses optim and is NOT recommended, as it hasn't been tested
+##'   thoroughly and doesn't enforce all constraints), or "constrOptim" (using
 ##'   constrOptim from base package).
-##' @param lbounds A Vector of the lower bounds for each element. These values 
+##' @param lbounds A Vector of the lower bounds for each element. These values
 ##'   should all be numeric
-##' @param ubounds A Vector of the upper bounds for each element. These values 
+##' @param ubounds A Vector of the upper bounds for each element. These values
 ##'   should all be numeric
-##' @param forceInitialConstraint Should the initial parameter vector be forced 
-##'   to satisfy the constraints?  If TRUE, the initial value for one element 
-##'   will be adjusted in an attempt to satisfy the constraints, but this may 
-##'   not be possible.  If not, a warning is given and optimization proceeds 
-##'   with the provided starting value.
-##' @param tol The level of tolerance of the balancing (numeric). By default is 
-##'   set up to 1e-5.  Currently only used if all elements are fixed, and in 
-##'   this case it provides the numerical tolerance requried to check if the 
-##'   balance is satisfied.
-##' @param constrTol The tolerance to pass to the constrOptim algorithm.  This 
-##'   algorithm does not force that the equation is balanced but rather forces 
-##'   that the equation is within +/- constrTol % of being balanced.  For 
-##'   example, if constrTol = 0.0001, then a tolerable error of .01% is allowed 
-##'   in the balance.  This should be set very small as later any lack of 
-##'   balance is assigned to food, and such assignment could create negative 
-##'   values.
-##' @param plot Logical.  Should a plot be generated which shows the result of
+##' @param forceInitialConstraint Should the initial parameter vector be forced
+##'   to satisfy the constraints?  If TRUE, the initial value for one element
+##'   will be adjusted in an attempt to satisfy the constraints, but this may
+##'   not be possible. If not, a warning is given and optimization proceeds with
+##'   the provided starting value.
+##' @param tol The level of tolerance of the balancing (numeric). By default is
+##'   set up to 1e-5. Currently only used if all elements are fixed, and in this
+##'   case it provides the numerical tolerance requried to check if the balance
+##'   is satisfied.
+##' @param constrTol The tolerance to pass to the constrOptim algorithm. This
+##'   algorithm does not force that the equation is balanced but rather forces
+##'   that the equation is within +/- constrTol % of being balanced. For
+##'   example, if constrTol = 0.0001, then a tolerable error of .01% is allowed
+##'   in the balance. This should be set very small as later any lack of balance
+##'   is assigned to food, and such assignment could create negative values.
+##' @param plot Logical. Should a plot be generated which shows the result of
 ##'   the balancing?
-##' @param plotSigma A plotting parameter.  See ?plotBalancing.
-##'   
+##' @param plotSigma A plotting parameter. See ?plotBalancing.
+##'
 ##' @return A vector of the final balanced values
-##' 
+##'
 ##' @export
 ##' 
 
@@ -65,7 +64,7 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
   #if(any(dist == "Normal" & param2 < 1)){
   #  param2[dist == "Normal" & param2 < 1] = 1
   #  warning("Some standard deviations (for a normal distribution) were ",
-  #          "small (<1) and could cause a problem for the optimization.  ",
+  #          "small (<1) and could cause a problem for the optimization. ",
   #          "These were adjusted up to 1.")
   #}
   
@@ -198,7 +197,7 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
         param1 = param1 / scaleFactor
         param2 = param2 / scaleFactor
         lbounds = lbounds / scaleFactor
-        ## We need finite lower bounds.  Since the largest value is currently 1, a
+        ## We need finite lower bounds. Since the largest value is currently 1, a
         ## lower bound of -10000 should always be large enough for all
         ## optimizations.
         lbounds[lbounds == -Inf] = -10000
@@ -217,9 +216,9 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
         }
       
         ## According to constrOptim documentation, the constraints must be given 
-        ## by a matrix ui and ci.  It will then be enforced that ui %*% theta - ci
-        ## >= 0.  We must ensure the equation balances, i.e. the sum of the fixed 
-        ## and non-fixed elements, multiplied by their sign, is 0.  To impose 
+        ## by a matrix ui and ci. It will then be enforced that ui %*% theta - ci
+        ## >= 0. We must ensure the equation balances, i.e. the sum of the fixed 
+        ## and non-fixed elements, multiplied by their sign, is 0. To impose 
         ## this, we use two constraints:
         ## 
         ## 1. The sum of the fixed elements (with their signs) must be >= the sum 
@@ -228,11 +227,11 @@ balancing = function(param1, param2, sign, dist = rep("Normal", length(param1)),
         ## 
         ## 2. The negative sum of the fixed elements (with their signs) must be >=
         ## the negative sum of the non-fixed elements (with their signs) minus a 
-        ## small number (arbitrarily choosen to be 0.0001).  With 1 and 2, we 
+        ## small number (arbitrarily choosen to be 0.0001). With 1 and 2, we 
         ## enforce that the imbalance will be very small.
         ## 
-        ## 3.  Lastly, we also constrain every element individually by it's lower
-        ## bound.  This amounts to using an identity matrix to require each
+        ## 3. Lastly, we also constrain every element individually by it's lower
+        ## bound. This amounts to using an identity matrix to require each
         ## element be greater than lbounds.
         ##
         optimizedResult = constrOptim(theta = initial[!fixedIndex],

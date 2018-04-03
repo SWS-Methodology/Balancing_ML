@@ -11,7 +11,7 @@
 ##' @param final A vector of the final/optimized values.
 ##' @param plotSigma All plots have the same width (although presumably 
 ##'   different centers) so as to show differences in widths of distributions. 
-##'   The width choosen for each plot is 2*plotSigma*max(param2).  Thus,
+##'   The width chosen for each plot is 2*plotSigma*max(param2).  Thus,
 ##'   plotSigma = 3 implies the width of the plotting window will be wide enough
 ##'   to show 3 standard deviations for the widest distribution.
 ##'   

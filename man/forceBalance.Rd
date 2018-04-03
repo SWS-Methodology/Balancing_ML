@@ -54,3 +54,4 @@ faoswsBalancing:::forceBalance(value = c(10, 10, 30, 50), sign = c(1, 1, -1, -1)
              fixed = c(TRUE, TRUE, TRUE, FALSE), lowerBound = c(0,0,0,-Inf))
 
 }
+

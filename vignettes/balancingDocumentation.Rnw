@@ -114,8 +114,6 @@ This vignette provides a detailed description of balancing modules.
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 
 \begin{document}
-\SweaveOpts{concordance=TRUE}
-
 \newpage
 
 \section{Methodology}
