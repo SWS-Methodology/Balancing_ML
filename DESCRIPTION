@@ -16,4 +16,4 @@ Imports: Rsolnp (>= 1.15)
 LazyData: yes
 ZipData: no
 Suggests: knitr, testthat
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

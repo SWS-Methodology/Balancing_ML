@@ -65,4 +65,3 @@ A vector of the final balanced values
 \description{
 This function balances the data using maximum likelihood.
 }
-

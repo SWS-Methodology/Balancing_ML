@@ -5,7 +5,7 @@
 \title{Balancing algorithm via Maximum Likelihood with all Normal Distributions}
 \usage{
 balancingProportional(param1, param2, sign, lbounds = rep(0, length(param1)),
-  ubounds = rep(Inf, length(param1)))
+  ubounds = rep(Inf, length(param1)), failed = FALSE)
 }
 \arguments{
 \item{param1}{A vector of the first parameter for each of the elements.  For
@@ -23,6 +23,9 @@ should all be numeric}
 
 \item{ubounds}{A vector of the upper bounds for each element. These values 
 should all be numeric}
+
+\item{failed}{Logic value indicating if the balancing occurs after the failure of some cases
+when imbalance>0}
 }
 \value{
 A vector of the final balanced values
@@ -55,4 +58,3 @@ lbounds = c(0, 0, 0, -Inf, 0, 0, 0, 0, 0, 0, 0)
 ubounds = rep(Inf, 11)
 
 }
-

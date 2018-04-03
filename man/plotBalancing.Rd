@@ -29,4 +29,3 @@ This function takes the results from the balancing code and plots the
 distributions.  Currently, it assumes all distributions are normal for 
 simplicity.
 }
-
