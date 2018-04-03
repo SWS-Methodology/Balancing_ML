@@ -25,7 +25,8 @@
 ##'   should all be numeric
 ##' @param ubounds A Vector of the upper bounds for each element. These values 
 ##'   should all be numeric
-##'   
+##' @param failed Logic value indicating if the balancing occurs after the failure of some cases
+##' when imbalance>0
 ##' @return A vector of the final balanced values
 ##'   
 ##' @examples
@@ -42,7 +43,8 @@
 
 balancingProportional = function(param1, param2, sign,
                            lbounds = rep(0, length(param1)),
-                           ubounds = rep(Inf, length(param1))){
+                           ubounds = rep(Inf, length(param1)),
+                           failed = FALSE){
   ## Data quality checks
   ## (None implemented as this function is a helper function and should not be
   ## called directly (but rather called from balancing()).
@@ -58,7 +60,7 @@ balancingProportional = function(param1, param2, sign,
 
   solution = param1
   
-  if(imbalance>0 )
+  if(imbalance>0&!failed)
   {
 
     signResidual=sign
@@ -70,12 +72,12 @@ balancingProportional = function(param1, param2, sign,
       solution= solution + imbalance *(signResidual)
       imbalance=0
       
-    }
+    }else{
     
       solution= solution+ maxResidual *(signResidual) 
       imbalance= imbalance-maxResidual
     }
-
+}
   
   if(all(param2 == 0) & imbalance != 0){
       stop("Balance was not possible because of constraints.")
@@ -104,7 +106,7 @@ balancingProportional = function(param1, param2, sign,
     solution = balancingProportional(param1 = solution,
                                param2 = ifelse(failedCases, 0, param2),
                                sign = sign, lbounds = lbounds,
-                               ubounds = ubounds)
+                               ubounds = ubounds,failed = TRUE)
   }
   return(solution)
 }
