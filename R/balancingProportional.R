@@ -49,7 +49,11 @@ balancingProportional = function(param1, param2, sign,
   ## (None implemented as this function is a helper function and should not be
   ## called directly (but rather called from balancing()).
   
-  imbalance = param1 %*% sign
+  sign2 =sign
+  
+  sign2[sign2==0]=-1
+  
+  imbalance = param1 %*% sign2
   
   signSupply= sign
   signSupply[signSupply<0]=0
@@ -95,7 +99,7 @@ balancingProportional = function(param1, param2, sign,
     weight=weight
   } else {weight = weight / sum(weight)}
   
-  solution = solution + imbalance * weight * (-sign)
+  solution = solution + imbalance * weight * (-sign2)
   failedCases = solution < lbounds | solution > ubounds
   if(any(failedCases)){
     ## Assign to boundary if it crossed boundary
