@@ -1,8 +1,8 @@
 Package: faoswsBalancing
 Type: Package
 Title: Package to Balance the Food Balance Sheet
-Version: 0.0.4
-Date: 2018-04-03
+Version: 0.0.5
+Date: 2018-04-04
 Authors@R: c(person("Marco", "Garieri", role = "aut", email ="marco.garieri@fao.org"),
          person("Josh", "Browning", role = "aut", email = "joshua.browning@fao.org"),
          person("Francesca", "Rosa", role = c("aut", "cre"), email =
